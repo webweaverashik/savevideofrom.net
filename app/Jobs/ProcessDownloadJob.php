@@ -4,6 +4,7 @@ declare (strict_types = 1);
 
 namespace App\Jobs;
 
+use App\Exceptions\ExtractionException;
 use App\Models\DownloadJob as DownloadJobModel;
 use App\Services\Download\Contracts\MediaDownloader;
 use Illuminate\Bus\Queueable;
@@ -33,9 +34,15 @@ class ProcessDownloadJob implements ShouldQueue
 
         $job->markProcessing();
 
-        // The downloader persists file_name/file_path/file_size/mime_type
-        // and calls markCompleted() on success (implemented in Phase 3).
-        $downloader->download($job);
+        try {
+            $downloader->download($job); // persists file info + markCompleted on success
+        } catch (ExtractionException $e) {
+            if (! $e->retryable) {
+                $job->markFailed($e->errorType, $e->getMessage());
+                return;
+            }
+            throw $e;
+        }
     }
 
     public function timeout(): int
@@ -45,12 +52,10 @@ class ProcessDownloadJob implements ShouldQueue
 
     public function failed(Throwable $e): void
     {
-        Log::error('Download processing failed', [
-            'uuid'  => $this->uuid,
-            'error' => $e->getMessage(),
-        ]);
+        Log::error('Download processing failed', ['uuid' => $this->uuid, 'error' => $e->getMessage()]);
 
-        DownloadJobModel::where('uuid', $this->uuid)
-            ->first()?->markFailed('download_error', $e->getMessage());
+        $type = $e instanceof ExtractionException ? $e->errorType : 'download_error';
+
+        DownloadJobModel::where('uuid', $this->uuid)->first()?->markFailed($type, $e->getMessage());
     }
 }

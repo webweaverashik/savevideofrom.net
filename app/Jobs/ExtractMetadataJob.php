@@ -1,10 +1,11 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace App\Jobs;
 
 use App\Enums\DownloadStatus;
+use App\Exceptions\ExtractionException;
 use App\Models\DownloadJob as DownloadJobModel;
 use App\Services\Download\Contracts\MediaExtractor;
 use Illuminate\Bus\Queueable;
@@ -19,10 +20,11 @@ class ExtractMetadataJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public int $tries = 2;
+    public int $tries   = 2;
     public int $backoff = 10;
 
-    public function __construct(public string $uuid) {}
+    public function __construct(public string $uuid)
+    {}
 
     public function handle(MediaExtractor $extractor): void
     {
@@ -33,13 +35,22 @@ class ExtractMetadataJob implements ShouldQueue
 
         $job->update(['status' => DownloadStatus::Extracting]);
 
-        $info = $extractor->extract($job->url);
+        try {
+            $info = $extractor->extract($job->url);
+        } catch (ExtractionException $e) {
+            if (! $e->retryable) {
+                $job->markFailed($e->errorType, $e->getMessage());
+                return; // permanent — do not retry
+            }
+            throw $e; // transient — let the queue retry
+        }
 
         $job->update([
             'status'        => DownloadStatus::Ready,
             'title'         => $info->title,
             'thumbnail_url' => $info->thumbnail,
             'duration'      => $info->duration,
+            'platform'      => $info->platform,
             'meta'          => $info->toArray(),
             'expires_at'    => now()->addMinutes((int) config('downloader.retention_minutes')),
         ]);
@@ -52,13 +63,10 @@ class ExtractMetadataJob implements ShouldQueue
 
     public function failed(Throwable $e): void
     {
-        Log::warning('Metadata extraction failed', [
-            'uuid'  => $this->uuid,
-            'error' => $e->getMessage(),
-        ]);
+        Log::warning('Metadata extraction failed', ['uuid' => $this->uuid, 'error' => $e->getMessage()]);
 
-        DownloadJobModel::where('uuid', $this->uuid)
-            ->first()
-            ?->markFailed('extract_error', $e->getMessage());
+        $type = $e instanceof ExtractionException ? $e->errorType : 'extract_error';
+
+        DownloadJobModel::where('uuid', $this->uuid)->first()?->markFailed($type, $e->getMessage());
     }
 }

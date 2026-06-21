@@ -1,0 +1,3 @@
+# Install with:  pip install -r requirements.txt
+# FFmpeg is a SYSTEM binary (not pip) — install separately and point FFMPEG_PATH at it.
+yt-dlp>=2024.0.0
