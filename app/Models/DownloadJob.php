@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\DownloadStatus;
 use App\Enums\MediaType;
+use App\Services\Download\DownloadSettings;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -65,6 +66,7 @@ class DownloadJob extends Model
             'status'       => DownloadStatus::Completed,
             'completed_at' => now(),
             'expires_at'   => now()->addMinutes((int) config('downloader.retention_minutes')),
+            'expires_at'   => now()->addMinutes(app(DownloadSettings::class)->retentionMinutes()),
         ]));
     }
 

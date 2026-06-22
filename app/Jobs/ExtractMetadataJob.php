@@ -9,6 +9,7 @@ use App\Exceptions\ExtractionException;
 use App\Models\DownloadJob as DownloadJobModel;
 use App\Services\Download\Contracts\MediaExtractor;
 use App\Services\Download\CookieResolver;
+use App\Services\Download\DownloadSettings;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -27,7 +28,7 @@ class ExtractMetadataJob implements ShouldQueue
     public function __construct(public string $uuid)
     {}
 
-    public function handle(MediaExtractor $extractor, CookieResolver $cookies): void
+    public function handle(MediaExtractor $extractor, CookieResolver $cookies, DownloadSettings $settings): void
     {
         $job = DownloadJobModel::where('uuid', $this->uuid)->first();
         if ($job === null) {
@@ -53,7 +54,7 @@ class ExtractMetadataJob implements ShouldQueue
             'duration'      => $info->duration,
             'platform'      => $info->platform,
             'meta'          => $info->toArray(),
-            'expires_at'    => now()->addMinutes((int) config('downloader.retention_minutes')),
+            'expires_at'    => now()->addMinutes($settings->retentionMinutes()),
         ]);
     }
 

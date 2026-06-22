@@ -1,10 +1,11 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace App\Http\Requests;
 
 use App\Rules\SafeUrl;
+use App\Services\Download\DownloadSettings;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -20,7 +21,7 @@ class BatchDownloadRequest extends FormRequest
         return [
             'url'        => ['required', 'string', 'max:2048', 'url:http,https', new SafeUrl()],
             'title'      => ['nullable', 'string', 'max:255'],
-            'urls'       => ['required', 'array', 'min:1', 'max:' . (int) config('downloader.max_batch_items')],
+            'urls'       => ['required', 'array', 'min:1', 'max:' . app(DownloadSettings::class)->maxBatchItems()],
             'urls.*'     => ['required', 'string', 'url:http,https', 'max:2048'],
             'media_type' => ['required', Rule::in(['video', 'audio'])],
             'quality'    => ['nullable', 'string', 'max:20'],

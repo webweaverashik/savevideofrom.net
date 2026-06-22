@@ -1,12 +1,17 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
+use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Admin\CookieController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\DownloadLogController;
+use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Api\BatchController;
 use App\Http\Controllers\Api\DownloadController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => view('home'))->name('home');
+Route::get('/', fn() => view('home'))->name('home');
 
 // Async downloader API (web group → CSRF + session). Phase 8 adds SEO landing pages.
 Route::post('/api/extract', [DownloadController::class, 'extract'])
@@ -21,7 +26,6 @@ Route::get('/api/status/{job}', [DownloadController::class, 'status'])->name('ap
 
 Route::get('/download/{job}', [DownloadController::class, 'serve'])->name('download.serve');
 
-
 Route::post('/api/batch/extract', [BatchController::class, 'extract'])
     ->middleware('throttle:extract')->name('api.batch.extract');
 
@@ -31,3 +35,28 @@ Route::post('/api/batch/download', [BatchController::class, 'download'])
 Route::get('/api/batch/status/{batch}', [BatchController::class, 'status'])->name('api.batch.status');
 
 Route::get('/batch/{batch}/download', [BatchController::class, 'serve'])->name('batch.serve');
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('login', [AdminAuthController::class, 'showLogin'])->name('login');
+    Route::post('login', [AdminAuthController::class, 'login'])->name('login.attempt');
+    Route::post('logout', [AdminAuthController::class, 'logout'])->name('logout');
+
+    Route::middleware('admin')->group(function () {
+        Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('logs', [DownloadLogController::class, 'index'])->name('logs');
+    });
+
+    Route::get('cookies', [CookieController::class, 'index'])->name('cookies.index');
+    Route::get('cookies/{platform:slug}', [CookieController::class, 'show'])->name('cookies.show');
+    Route::post('cookies/{platform:slug}', [CookieController::class, 'store'])->name('cookies.store');
+    Route::delete('cookies/{platform:slug}/{file}', [CookieController::class, 'destroy'])->name('cookies.destroy');
+
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('download', [SettingsController::class, 'download'])->name('download');
+        Route::post('download', [SettingsController::class, 'updateDownload'])->name('download.update');
+        Route::get('ads', [SettingsController::class, 'ads'])->name('ads');
+        Route::post('ads', [SettingsController::class, 'updateAds'])->name('ads.update');
+        Route::get('seo', [SettingsController::class, 'seo'])->name('seo');
+        Route::post('seo', [SettingsController::class, 'updateSeo'])->name('seo.update');
+    });
+});

@@ -4,6 +4,7 @@ declare (strict_types = 1);
 
 namespace App\Models;
 
+use App\Services\Settings\SettingsService;
 use Illuminate\Database\Eloquent\Model;
 
 class SiteSetting extends Model
@@ -22,5 +23,10 @@ class SiteSetting extends Model
             'json'    => json_decode((string) $this->value, true) ?? [],
             default   => $this->value,
         };
+    }
+
+    public static function value(string $key, mixed $default = null): mixed
+    {
+        return app(SettingsService::class)->get($key, $default);
     }
 }

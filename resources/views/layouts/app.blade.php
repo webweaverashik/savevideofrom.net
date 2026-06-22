@@ -5,9 +5,38 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', config('app.name', 'SaveVideoFrom.net') . ' — Free Universal Video Downloader')</title>
-    <meta name="description" content="@yield('description', 'Download videos from YouTube, TikTok, Instagram, Facebook, X and 1,000+ more sites. Free, fast, no sign-up.')">
+    <title>@yield('title', \App\Models\SiteSetting::value('default_meta_title', config('app.name', 'SaveVideoFrom.net') . ' — Free Universal Video Downloader'))</title>
+    <meta name="description" content="@yield('description', \App\Models\SiteSetting::value('default_meta_description', 'Download videos from YouTube, TikTok, Instagram, Facebook, X and 1,000+ more sites. Free, fast, no sign-up.'))">
+    <meta name="keywords"
+        content="{{ \App\Models\SiteSetting::value('default_meta_keywords', 'video downloader, youtube downloader, tiktok downloader') }}">
     <link rel="canonical" href="{{ url()->current() }}">
+
+    @if ($ogImage = \App\Models\SiteSetting::value('og_image'))
+        <meta property="og:image" content="{{ $ogImage }}">
+    @endif
+    @if ($gsv = \App\Models\SiteSetting::value('google_site_verification'))
+        <meta name="google-site-verification" content="{{ $gsv }}">
+    @endif
+    @if ($gaId = \App\Models\SiteSetting::value('google_analytics_id'))
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag('js', new Date());
+            gtag('config', '{{ $gaId }}');
+        </script>
+    @endif
+    @php
+        $adsClient = \App\Models\SiteSetting::value('adsense_client');
+        $adsOn = \App\Models\SiteSetting::value('ads_enabled', false);
+    @endphp
+    @if ($adsOn && $adsClient)
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ $adsClient }}"
+            crossorigin="anonymous"></script>
+    @endif
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -50,9 +79,11 @@
         </div>
     </header>
 
+    <div class="max-w-3xl mx-auto px-4"><x-ad slot="header" /></div>
     <main class="flex-1">
         @yield('content')
     </main>
+    <div class="max-w-3xl mx-auto px-4"><x-ad slot="footer" /></div>
 
     <footer class="border-t border-gray-200/70 dark:border-white/10 mt-20">
         <div class="max-w-5xl mx-auto px-4 py-10">

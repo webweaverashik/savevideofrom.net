@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace App\Http\Controllers\Api;
 
@@ -14,6 +14,7 @@ use App\Jobs\FinalizeBatchJob;
 use App\Jobs\ProcessDownloadJob;
 use App\Models\DownloadBatch;
 use App\Models\DownloadJob;
+use App\Services\Download\DownloadSettings;
 use App\Services\Download\PlatformDetector;
 use App\Services\Download\PlaylistExtractor;
 use Illuminate\Bus\Batch;
@@ -28,6 +29,7 @@ class BatchController extends Controller
     public function __construct(
         private readonly PlatformDetector $detector,
         private readonly PlaylistExtractor $playlist,
+        private readonly DownloadSettings $settings,
     ) {}
 
     public function extract(BatchExtractRequest $request): JsonResponse
@@ -38,7 +40,7 @@ class BatchController extends Controller
             return response()->json(['error' => $e->getMessage(), 'error_type' => $e->errorType], 422);
         }
 
-        $max     = (int) config('downloader.max_batch_items');
+        $max     = $this->settings->maxBatchItems();
         $entries = array_slice($data['entries'] ?? [], 0, $max);
 
         return response()->json([

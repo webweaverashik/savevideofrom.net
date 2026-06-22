@@ -14,6 +14,7 @@ class YtDlpDownloader implements MediaDownloader
         private readonly PythonProcessRunner $runner,
         private readonly SsrfGuard $guard,
         private readonly CookieResolver $cookies,
+        private readonly DownloadSettings $settings,
     ) {}
 
     public function download(DownloadJob $job): void
@@ -39,7 +40,7 @@ class YtDlpDownloader implements MediaDownloader
                 'requested_format' => $job->requested_format,
                 'media_type'       => $job->media_type?->value ?? 'video',
                 'audio_only'       => $audioOnly,
-                'max_filesize_mb'  => (int) config('downloader.max_filesize_mb'),
+                'max_filesize_mb'  => $this->settings->maxFilesizeMb(),
                 'ffmpeg_path'      => config('downloader.ffmpeg_path') ?: null,
                 'cookies_files'    => $this->cookies->poolFor($job->platform),
             ],
