@@ -9,9 +9,23 @@ use App\Http\Controllers\Admin\DownloadLogController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Api\BatchController;
 use App\Http\Controllers\Api\DownloadController;
+use App\Http\Controllers\LandingController;
+use App\Http\Controllers\SitemapController;
+use App\Models\Platform;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn() => view('home'))->name('home');
+Route::get('/', function () {
+    return view('home', [
+        'platforms' => Platform::query()->active()
+            ->orderByDesc('is_featured')->orderBy('sort_order')->orderBy('name')->get(),
+    ]);
+})->name('home');
+
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+
+Route::get('/robots.txt', function () {
+    return response("User-agent: *\nAllow: /\nSitemap: " . url('/sitemap.xml') . "\n", 200, ['Content-Type' => 'text/plain']);
+});
 
 // Async downloader API (web group → CSRF + session). Phase 8 adds SEO landing pages.
 Route::post('/api/extract', [DownloadController::class, 'extract'])
@@ -60,3 +74,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('seo', [SettingsController::class, 'updateSeo'])->name('seo.update');
     });
 });
+
+Route::get('/{page}', [LandingController::class, 'show'])
+    ->where('page', '[a-z0-9-]+-downloader')
+    ->name('landing');
