@@ -23,6 +23,7 @@ return [
     'scripts'           => [
         'extractor'  => base_path('python_worker/extractor.py'),
         'downloader' => base_path('python_worker/downloader.py'),
+        'playlist'   => base_path('python_worker/playlist.py'),
     ],
 
     'cookies_path'      => storage_path('app/private/cookies'),
@@ -61,4 +62,13 @@ return [
     |--------------------------------------------------------------------------
     */
     'allowed_schemes'   => ['http', 'https'],
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Max playlist videos
+    |--------------------------------------------------------------------------
+    */
+    'max_batch_items' => (int) env('DOWNLOAD_MAX_BATCH_ITEMS', 50),
+
 ];

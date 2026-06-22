@@ -9,10 +9,7 @@ use App\DataTransferObjects\MediaInfoDTO;
 interface MediaExtractor
 {
     /**
-     * Run a metadata-only extraction (no file download) and return
-     * available formats. Implemented in Phase 3 via the Python worker.
-     *
-     * @throws \RuntimeException on extraction failure
+     * @param string[] $cookieFiles platform cookie pool (worker tries public first, then these)
      */
-    public function extract(string $url, ?string $cookieFile = null): MediaInfoDTO;
+    public function extract(string $url, array $cookieFiles = []): MediaInfoDTO;
 }

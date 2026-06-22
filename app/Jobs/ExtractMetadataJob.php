@@ -36,10 +36,8 @@ class ExtractMetadataJob implements ShouldQueue
 
         $job->update(['status' => DownloadStatus::Extracting]);
 
-        $cookieFile = $cookies->resolveForJob($job->uuid, $job->platform);
-
         try {
-            $info = $extractor->extract($job->url, $cookieFile);
+            $info = $extractor->extract($job->url, $cookies->poolFor($job->platform));
         } catch (ExtractionException $e) {
             if (! $e->retryable) {
                 $job->markFailed($e->errorType, $e->getMessage());

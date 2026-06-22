@@ -1,1 +1,2 @@
 import './downloader';
+import './batch';

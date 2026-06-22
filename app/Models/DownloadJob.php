@@ -8,12 +8,13 @@ use App\Enums\DownloadStatus;
 use App\Enums\MediaType;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
 class DownloadJob extends Model
 {
     protected $fillable = [
-        'uuid', 'url', 'platform', 'has_cookies', 'status', 'media_type',
+        'uuid', 'batch_id', 'url', 'platform', 'has_cookies', 'status', 'media_type',
         'title', 'thumbnail_url', 'duration',
         'requested_format', 'requested_quality', 'format_id',
         'file_name', 'file_path', 'file_size', 'mime_type',
@@ -84,5 +85,10 @@ class DownloadJob extends Model
     public function scopeExpired(Builder $query): Builder
     {
         return $query->whereNotNull('expires_at')->where('expires_at', '<', now());
+    }
+
+    public function batch(): BelongsTo
+    {
+        return $this->belongsTo(DownloadBatch::class, 'batch_id');
     }
 }

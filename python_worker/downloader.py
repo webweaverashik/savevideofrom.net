@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""SaveVideoFrom.net — download worker. Implements the MediaDownloader contract."""
+"""SaveVideoFrom.net — download worker. Tries public first, then platform cookies."""
 from __future__ import annotations
 
 import os
+import random
 import re
 
 from lib.response import read_input, emit_success, emit_error, log
-from lib.errors import classify
+from lib.errors import classify, cookies_might_help
 from lib.ytdlp import get_ytdlp, base_opts
 from lib.cookies import valid_cookie_file
 
@@ -60,20 +61,18 @@ def resolve_output_file(info: dict, output_dir: str) -> str | None:
     return max(candidates, key=os.path.getsize) if candidates else None
 
 
-def main() -> None:
-    data = read_input()
-    url = (data.get("url") or "").strip()
-    output_dir = data.get("output_dir")
-    if not url or not output_dir:
-        emit_error("Missing url or output_dir.", "bad_input", retryable=False)
+def clear_dir(output_dir: str) -> None:
+    for f in os.listdir(output_dir):
+        p = os.path.join(output_dir, f)
+        if os.path.isfile(p):
+            try:
+                os.remove(p)
+            except OSError:
+                pass
 
-    os.makedirs(output_dir, exist_ok=True)
 
-    yt_dlp = get_ytdlp()
-    opts = base_opts(
-        ffmpeg_path=data.get("ffmpeg_path"),
-        cookies_file=valid_cookie_file(data.get("cookies_file")),
-    )
+def attempt_download(yt_dlp, data: dict, output_dir: str, cookie_file):
+    opts = base_opts(ffmpeg_path=data.get("ffmpeg_path"), cookies_file=valid_cookie_file(cookie_file))
     opts["outtmpl"] = os.path.join(output_dir, "%(title).80s.%(ext)s")
     opts["restrictfilenames"] = True
     opts["windowsfilenames"] = True
@@ -84,33 +83,62 @@ def main() -> None:
 
     build_format_opts(opts, data)
 
-    try:
-        with yt_dlp.YoutubeDL(opts) as ydl:
-            info = ydl.extract_info(url, download=True)
-    except yt_dlp.utils.DownloadError as e:
-        etype, msg, retry = classify(str(e))
-        log(f"DownloadError: {e}")
-        emit_error(msg, etype, retry)
-    except Exception as e:  # noqa: BLE001
-        etype, msg, retry = classify(str(e))
-        log(f"Unexpected: {e}")
-        emit_error(msg, etype, retry)
+    with yt_dlp.YoutubeDL(opts) as ydl:
+        return ydl.extract_info(data["url"], download=True)
 
-    final_path = resolve_output_file(info, output_dir)
-    if not final_path:
-        emit_error("Download finished but no output file was produced.", "no_media", retryable=False)
 
-    ext = os.path.splitext(final_path)[1].lstrip(".").lower()
+def main() -> None:
+    data = read_input()
+    url = (data.get("url") or "").strip()
+    output_dir = data.get("output_dir")
+    if not url or not output_dir:
+        emit_error("Missing url or output_dir.", "bad_input", retryable=False)
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    yt_dlp = get_ytdlp()
+    cookies = [c for c in (data.get("cookies_files") or []) if valid_cookie_file(c)]
+    random.shuffle(cookies)
+    candidates = [None] + cookies
+
     audio_only = bool(data.get("audio_only")) or data.get("media_type") == "audio"
+    last = ("download_error", "Could not process this content.", True)
 
-    emit_success({
-        "file_name": os.path.basename(final_path),
-        "file_path": final_path,
-        "file_size": os.path.getsize(final_path),
-        "mime_type": MIME.get(ext, "application/octet-stream"),
-        "media_type": "audio" if audio_only else "video",
-        "title": (info.get("title") or "download"),
-    })
+    for cookie in candidates:
+        label = "public" if cookie is None else os.path.basename(cookie)
+        clear_dir(output_dir)
+        try:
+            info = attempt_download(yt_dlp, data, output_dir, cookie)
+        except yt_dlp.utils.DownloadError as e:
+            last = classify(str(e))
+            log(f"download [{label}] failed: {e}")
+            if not cookies_might_help(last[0]):
+                break
+            continue
+        except Exception as e:  # noqa: BLE001
+            last = classify(str(e))
+            log(f"download [{label}] error: {e}")
+            if not cookies_might_help(last[0]):
+                break
+            continue
+
+        final_path = resolve_output_file(info, output_dir)
+        if not final_path:
+            last = ("no_media", "Download finished but no output file was produced.", False)
+            break
+
+        ext = os.path.splitext(final_path)[1].lstrip(".").lower()
+        log(f"download succeeded with [{label}]")
+        emit_success({
+            "file_name": os.path.basename(final_path),
+            "file_path": final_path,
+            "file_size": os.path.getsize(final_path),
+            "mime_type": MIME.get(ext, "application/octet-stream"),
+            "media_type": "audio" if audio_only else "video",
+            "title": (info.get("title") or "download"),
+        })
+
+    emit_error(last[1], last[0], last[2])
 
 
 if __name__ == "__main__":

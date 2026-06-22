@@ -4,6 +4,8 @@ declare (strict_types = 1);
 
 namespace App\Jobs;
 
+use App\Enums\DownloadStatus;
+use App\Models\DownloadBatch;
 use App\Models\DownloadJob as DownloadJobModel;
 use App\Services\Download\CookieStore;
 use Illuminate\Bus\Queueable;
@@ -36,7 +38,7 @@ class CleanupExpiredDownloadsJob implements ShouldQueue
                     }
 
                     $job->update([
-                        'status'    => \App\Enums\DownloadStatus::Expired,
+                        'status'    => DownloadStatus::Expired,
                         'file_path' => null,
                     ]);
 
@@ -47,5 +49,19 @@ class CleanupExpiredDownloadsJob implements ShouldQueue
         if ($deleted > 0) {
             Log::info('Expired downloads cleaned up', ['count' => $deleted]);
         }
+
+        DownloadBatch::expired()
+            ->where('status', '!=', DownloadStatus::Expired)
+            ->chunkById(100, function ($batches) use ($disk): void {
+                foreach ($batches as $batch) {
+                    if ($batch->zip_path && $disk->exists($batch->zip_path)) {
+                        $disk->delete($batch->zip_path);
+                    }
+                    $batch->update([
+                        'status'   => DownloadStatus::Expired,
+                        'zip_path' => null,
+                    ]);
+                }
+            });
     }
 }

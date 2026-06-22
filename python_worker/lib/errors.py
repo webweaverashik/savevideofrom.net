@@ -1,12 +1,16 @@
-"""Classify raw yt-dlp / network error text into a stable (error_type, message, retryable) tuple."""
+"""Classify raw yt-dlp / network error text into (error_type, message, retryable)."""
 from __future__ import annotations
+
+# Error types where retrying with cookies cannot help.
+NO_COOKIE_HELP = {"not_found", "unsupported", "geo_blocked", "bad_input", "network_error", "no_media"}
 
 
 def classify(text: str | None) -> tuple[str, str, bool]:
     t = (text or "").lower()
 
     if any(k in t for k in ["private", "login required", "log in", "this account is private",
-                            "requested content is not available", "sign in to confirm you"]):
+                            "requested content is not available", "sign in to confirm you",
+                            "members-only", "join this channel"]):
         return ("private_content", "This content is private or requires login.", False)
 
     if any(k in t for k in ["video unavailable", "not found", "no longer available",
@@ -26,3 +30,8 @@ def classify(text: str | None) -> tuple[str, str, bool]:
         return ("network_error", "A network error occurred. Please try again.", True)
 
     return ("download_error", "Could not process this content.", True)
+
+
+def cookies_might_help(error_type: str) -> bool:
+    """Whether falling back to authenticated cookies could plausibly fix this error."""
+    return error_type not in NO_COOKIE_HELP

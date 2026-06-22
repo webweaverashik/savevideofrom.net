@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace App\Services\Download;
 
@@ -14,7 +14,6 @@ class YtDlpDownloader implements MediaDownloader
         private readonly PythonProcessRunner $runner,
         private readonly SsrfGuard $guard,
         private readonly CookieResolver $cookies,
-        private readonly CookieStore $store,
     ) {}
 
     public function download(DownloadJob $job): void
@@ -22,14 +21,13 @@ class YtDlpDownloader implements MediaDownloader
         $this->guard->assertSafe($job->url);
 
         $outputDir = rtrim((string) config('downloader.storage_path'), '/\\')
-            . DIRECTORY_SEPARATOR . $job->uuid;
+        . DIRECTORY_SEPARATOR . $job->uuid;
 
         if (! is_dir($outputDir)) {
             mkdir($outputDir, 0775, true);
         }
 
-        $audioOnly  = $job->media_type === MediaType::Audio;
-        $cookieFile = $this->cookies->resolveForJob($job->uuid, $job->platform);
+        $audioOnly = $job->media_type === MediaType::Audio;
 
         $result = $this->runner->run(
             config('downloader.scripts.downloader'),
@@ -43,7 +41,7 @@ class YtDlpDownloader implements MediaDownloader
                 'audio_only'       => $audioOnly,
                 'max_filesize_mb'  => (int) config('downloader.max_filesize_mb'),
                 'ffmpeg_path'      => config('downloader.ffmpeg_path') ?: null,
-                'cookies_file'     => $cookieFile,
+                'cookies_files'    => $this->cookies->poolFor($job->platform),
             ],
             (int) config('downloader.process_timeout'),
         );
@@ -56,8 +54,5 @@ class YtDlpDownloader implements MediaDownloader
             'media_type' => MediaType::from($result['media_type'] ?? 'video'),
             'title'      => $job->title ?: ($result['title'] ?? null),
         ]);
-
-        // User cookie is no longer needed once the file exists.
-        $this->store->delete($job->uuid);
     }
 }

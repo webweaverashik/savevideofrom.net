@@ -1,39 +1,37 @@
 <?php
 
-declare (strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Services\Download;
 
-use App\DataTransferObjects\MediaInfoDTO;
-use App\Services\Download\Contracts\MediaExtractor;
-
-class YtDlpExtractor implements MediaExtractor
+class PlaylistExtractor
 {
     public function __construct(
         private readonly PythonProcessRunner $runner,
         private readonly SsrfGuard $guard,
         private readonly PlatformDetector $detector,
+        private readonly CookieResolver $cookies,
     ) {}
 
-    public function extract(string $url, array $cookieFiles = []): MediaInfoDTO
+    /** @return array{title:string,platform:?string,count:int,entries:array<int,array>} */
+    public function extract(string $url): array
     {
         $this->guard->assertSafe($url);
 
         $platform = $this->detector->detect($url);
 
         $result = $this->runner->run(
-            config('downloader.scripts.extractor'),
+            config('downloader.scripts.playlist'),
             [
                 'url'           => $url,
                 'platform'      => $platform,
-                'ffmpeg_path'   => config('downloader.ffmpeg_path') ?: null,
-                'cookies_files' => array_values($cookieFiles),
+                'cookies_files' => $this->cookies->poolFor($platform),
             ],
             (int) config('downloader.extract_timeout'),
         );
 
         $result['platform'] = $platform;
 
-        return MediaInfoDTO::fromArray($result);
+        return $result;
     }
 }

@@ -1,11 +1,21 @@
 #!/usr/bin/env python3
-"""SaveVideoFrom.net — metadata extractor (no download). Implements the MediaExtractor contract."""
+"""SaveVideoFrom.net — metadata extractor. Tries public first, then platform cookies."""
 from __future__ import annotations
 
+import os
+import random
+
 from lib.response import read_input, emit_success, emit_error, log
-from lib.errors import classify
+from lib.errors import classify, cookies_might_help
 from lib.ytdlp import get_ytdlp, base_opts, normalize_info
 from lib.cookies import valid_cookie_file
+
+
+def attempt(yt_dlp, url: str, ffmpeg_path, cookie_file):
+    opts = base_opts(ffmpeg_path=ffmpeg_path, cookies_file=valid_cookie_file(cookie_file))
+    opts["skip_download"] = True
+    with yt_dlp.YoutubeDL(opts) as ydl:
+        return ydl.extract_info(url, download=False)
 
 
 def main() -> None:
@@ -15,29 +25,39 @@ def main() -> None:
         emit_error("No URL provided.", "bad_input", retryable=False)
 
     yt_dlp = get_ytdlp()
-    opts = base_opts(
-        ffmpeg_path=data.get("ffmpeg_path"),
-        cookies_file=valid_cookie_file(data.get("cookies_file")),
-    )
-    opts["skip_download"] = True
+    ffmpeg_path = data.get("ffmpeg_path")
 
-    try:
-        with yt_dlp.YoutubeDL(opts) as ydl:
-            info = ydl.extract_info(url, download=False)
-    except yt_dlp.utils.DownloadError as e:
-        etype, msg, retry = classify(str(e))
-        log(f"DownloadError: {e}")
-        emit_error(msg, etype, retry)
-    except Exception as e:  # noqa: BLE001
-        etype, msg, retry = classify(str(e))
-        log(f"Unexpected: {e}")
-        emit_error(msg, etype, retry)
+    cookies = [c for c in (data.get("cookies_files") or []) if valid_cookie_file(c)]
+    random.shuffle(cookies)
+    candidates = [None] + cookies  # public first, then each cookie
 
-    normalized = normalize_info(info, platform=data.get("platform"))
-    if not normalized["formats"]:
-        emit_error("No downloadable formats were found.", "unsupported", retryable=False)
+    last = ("download_error", "Could not process this content.", True)
 
-    emit_success(normalized)
+    for cookie in candidates:
+        label = "public" if cookie is None else os.path.basename(cookie)
+        try:
+            info = attempt(yt_dlp, url, ffmpeg_path, cookie)
+        except yt_dlp.utils.DownloadError as e:
+            last = classify(str(e))
+            log(f"extract [{label}] failed: {e}")
+            if not cookies_might_help(last[0]):
+                break
+            continue
+        except Exception as e:  # noqa: BLE001
+            last = classify(str(e))
+            log(f"extract [{label}] error: {e}")
+            if not cookies_might_help(last[0]):
+                break
+            continue
+
+        normalized = normalize_info(info, platform=data.get("platform"))
+        if normalized["formats"]:
+            log(f"extract succeeded with [{label}]")
+            emit_success(normalized)
+        last = ("unsupported", "No downloadable formats were found.", False)
+        break
+
+    emit_error(last[1], last[0], last[2])
 
 
 if __name__ == "__main__":
