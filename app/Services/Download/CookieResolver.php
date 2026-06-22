@@ -8,15 +8,29 @@ use App\Services\Settings\SettingsService;
 
 class CookieResolver
 {
-    public function __construct(private readonly SettingsService $settings) {}
+    public function __construct(
+        private readonly SettingsService $settings,
+        private readonly CookieStore $store,
+    ) {}
 
-    /**
-     * Return a per-platform cookies file path if authenticated downloads
-     * are enabled and a readable cookie file exists.
-     */
-    public function resolve(?string $platform): ?string
+    /** Best cookie for a job: user-supplied first, then per-platform admin cookie. */
+    public function resolveForJob(?string $uuid, ?string $platform): ?string
     {
-        if ($platform === null || ! $this->settings->get('enable_cookies', true)) {
+        if (! $this->settings->get('enable_cookies', true)) {
+            return null;
+        }
+
+        if ($uuid !== null && $this->store->exists($uuid)) {
+            return $this->store->path($uuid);
+        }
+
+        return $this->resolvePlatform($platform);
+    }
+
+    /** Per-platform admin cookie file (managed via the Phase 7 admin UI). */
+    public function resolvePlatform(?string $platform): ?string
+    {
+        if ($platform === null) {
             return null;
         }
 

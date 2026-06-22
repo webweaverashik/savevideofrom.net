@@ -14,5 +14,5 @@ interface MediaExtractor
      *
      * @throws \RuntimeException on extraction failure
      */
-    public function extract(string $url): MediaInfoDTO;
+    public function extract(string $url, ?string $cookieFile = null): MediaInfoDTO;
 }

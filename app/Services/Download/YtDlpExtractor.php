@@ -13,10 +13,9 @@ class YtDlpExtractor implements MediaExtractor
         private readonly PythonProcessRunner $runner,
         private readonly SsrfGuard $guard,
         private readonly PlatformDetector $detector,
-        private readonly CookieResolver $cookies,
     ) {}
 
-    public function extract(string $url): MediaInfoDTO
+    public function extract(string $url, ?string $cookieFile = null): MediaInfoDTO
     {
         $this->guard->assertSafe($url);
 
@@ -28,7 +27,7 @@ class YtDlpExtractor implements MediaExtractor
                 'url'          => $url,
                 'platform'     => $platform,
                 'ffmpeg_path'  => config('downloader.ffmpeg_path') ?: null,
-                'cookies_file' => $this->cookies->resolve($platform),
+                'cookies_file' => $cookieFile,
             ],
             (int) config('downloader.extract_timeout'),
         );

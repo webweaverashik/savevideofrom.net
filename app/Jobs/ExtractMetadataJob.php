@@ -8,6 +8,7 @@ use App\Enums\DownloadStatus;
 use App\Exceptions\ExtractionException;
 use App\Models\DownloadJob as DownloadJobModel;
 use App\Services\Download\Contracts\MediaExtractor;
+use App\Services\Download\CookieResolver;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -26,7 +27,7 @@ class ExtractMetadataJob implements ShouldQueue
     public function __construct(public string $uuid)
     {}
 
-    public function handle(MediaExtractor $extractor): void
+    public function handle(MediaExtractor $extractor, CookieResolver $cookies): void
     {
         $job = DownloadJobModel::where('uuid', $this->uuid)->first();
         if ($job === null) {
@@ -35,14 +36,16 @@ class ExtractMetadataJob implements ShouldQueue
 
         $job->update(['status' => DownloadStatus::Extracting]);
 
+        $cookieFile = $cookies->resolveForJob($job->uuid, $job->platform);
+
         try {
-            $info = $extractor->extract($job->url);
+            $info = $extractor->extract($job->url, $cookieFile);
         } catch (ExtractionException $e) {
             if (! $e->retryable) {
                 $job->markFailed($e->errorType, $e->getMessage());
-                return; // permanent — do not retry
+                return;
             }
-            throw $e; // transient — let the queue retry
+            throw $e;
         }
 
         $job->update([

@@ -1,10 +1,11 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace App\Jobs;
 
 use App\Models\DownloadJob as DownloadJobModel;
+use App\Services\Download\CookieStore;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -17,7 +18,7 @@ class CleanupExpiredDownloadsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function handle(): void
+    public function handle(CookieStore $store)
     {
         $disk    = config('downloader.disk');
         $deleted = 0;
@@ -28,6 +29,10 @@ class CleanupExpiredDownloadsJob implements ShouldQueue
                 foreach ($jobs as $job) {
                     if ($job->file_path && Storage::disk($disk)->exists($job->file_path)) {
                         Storage::disk($disk)->delete($job->file_path);
+
+                        if ($job->has_cookies) {
+                            $store->delete($job->uuid);
+                        }
                     }
 
                     $job->update([

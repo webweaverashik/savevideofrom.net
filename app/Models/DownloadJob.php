@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 class DownloadJob extends Model
 {
     protected $fillable = [
-        'uuid', 'url', 'platform', 'status', 'media_type',
+        'uuid', 'url', 'platform', 'has_cookies', 'status', 'media_type',
         'title', 'thumbnail_url', 'duration',
         'requested_format', 'requested_quality', 'format_id',
         'file_name', 'file_path', 'file_size', 'mime_type',
@@ -25,6 +25,7 @@ class DownloadJob extends Model
     protected function casts(): array
     {
         return [
+            'has_cookies'  => 'boolean',
             'status'       => DownloadStatus::class,
             'media_type'   => MediaType::class,
             'meta'         => 'array',

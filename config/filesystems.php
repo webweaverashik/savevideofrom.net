@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default'   => env('FILESYSTEM_DISK', 'local'),
+    'default' => env('FILESYSTEM_DISK', 'local'),
 
     /*
     |--------------------------------------------------------------------------
@@ -28,9 +28,9 @@ return [
     |
     */
 
-    'disks'     => [
+    'disks'   => [
 
-        'local'  => [
+        'local'     => [
             'driver' => 'local',
             'root'   => storage_path('app/private'),
             'serve'  => true,
@@ -38,7 +38,7 @@ return [
             'report' => false,
         ],
 
-        'public' => [
+        'public'    => [
             'driver'     => 'local',
             'root'       => storage_path('app/public'),
             'url'        => rtrim(env('APP_URL', 'http://localhost'), '/') . '/storage',
@@ -47,7 +47,7 @@ return [
             'report'     => false,
         ],
 
-        's3'     => [
+        's3'        => [
             'driver'                  => 's3',
             'key'                     => env('AWS_ACCESS_KEY_ID'),
             'secret'                  => env('AWS_SECRET_ACCESS_KEY'),
@@ -59,7 +59,12 @@ return [
             'throw'                   => false,
             'report'                  => false,
         ],
-
+        'downloads' => [
+            'driver'     => 'local',
+            'root'       => storage_path('app/downloads'),
+            'visibility' => 'private',
+            'throw'      => false,
+        ],
     ],
 
     /*
@@ -73,15 +78,8 @@ return [
     |
     */
 
-    'links'     => [
+    'links'   => [
         public_path('storage') => storage_path('app/public'),
-    ],
-
-    'downloads' => [
-        'driver'     => 'local',
-        'root'       => storage_path('app/downloads'),
-        'visibility' => 'private',
-        'throw'      => false,
     ],
 
 ];

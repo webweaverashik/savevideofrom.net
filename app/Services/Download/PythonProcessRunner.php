@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace App\Services\Download;
 
@@ -32,6 +32,11 @@ class PythonProcessRunner
         $process->setInput((string) json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 
         try {
+            Log::debug('Spawning Python worker', [
+                'script'      => basename($script),
+                'ffmpeg_path' => $payload['ffmpeg_path'] ?? null,
+            ]);
+
             $process->run();
         } catch (ProcessTimedOutException) {
             throw new ExtractionException('The download timed out. Please try again.', 'network_error', true);
@@ -53,6 +58,12 @@ class PythonProcessRunner
         }
 
         if (! ($json['success'] ?? false)) {
+            Log::warning('Python worker reported an error', [
+                'script'     => basename($script),
+                'error_type' => $json['error_type'] ?? null,
+                'stderr'     => Str::limit($stderr, 1500),
+            ]);
+
             throw new ExtractionException(
                 $json['error'] ?? 'Unknown error',
                 $json['error_type'] ?? 'download_error',

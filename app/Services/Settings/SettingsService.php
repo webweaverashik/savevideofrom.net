@@ -13,12 +13,14 @@ class SettingsService
 
     public function get(string $key, mixed $default = null): mixed
     {
-        $setting = Cache::rememberForever(
+        // Cache the resolved VALUE, never the Eloquent model itself.
+        // Caching a model object breaks on unserialize (incomplete object).
+        $value = Cache::rememberForever(
             self::CACHE_PREFIX . $key,
-            fn() => SiteSetting::where('key', $key)->first()
+            fn() => SiteSetting::where('key', $key)->first()?->typedValue(),
         );
 
-        return $setting?->typedValue() ?? $default;
+        return $value ?? $default;
     }
 
     public function set(string $key, mixed $value, string $type = 'text', string $group = 'general'): void
@@ -39,9 +41,6 @@ class SettingsService
         Cache::forget(self::CACHE_PREFIX . $key);
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     public function group(string $group): array
     {
         return SiteSetting::where('group', $group)
