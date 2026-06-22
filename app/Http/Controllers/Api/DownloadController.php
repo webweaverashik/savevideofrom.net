@@ -63,12 +63,14 @@ class DownloadController extends Controller
     {
         $job = DownloadJob::where('uuid', $request->validated('uuid'))->firstOrFail();
 
-        // Idempotent: if it's already in flight or done, just report state.
-        if (in_array($job->status, [DownloadStatus::Processing, DownloadStatus::Completed], true)) {
-            return response()->json($this->serialize($job));
+        // A download is already running for this job — don't start a competing one.
+        if ($job->status === DownloadStatus::Processing) {
+            return response()->json($this->serialize($job), 409);
         }
 
-        if ($job->status !== DownloadStatus::Ready) {
+        // Allow downloading from a freshly-extracted (Ready) job, and re-downloading
+        // a different format from a previously Completed job.
+        if (! in_array($job->status, [DownloadStatus::Ready, DownloadStatus::Completed], true)) {
             return response()->json([
                 'uuid'   => $job->uuid,
                 'status' => $job->status->value,
@@ -83,10 +85,14 @@ class DownloadController extends Controller
             'requested_quality' => $request->validated('quality'),
             'requested_format'  => $request->validated('format'),
             'media_type'        => $audioOnly ? MediaType::Audio : MediaType::Video,
+            'status'            => DownloadStatus::Processing, // claim synchronously so polling never sees a stale "completed"
+            'file_path'         => null,
+            'file_name'         => null,
+            'error_type'        => null,
+            'error_message'     => null,
         ]);
 
-        ProcessDownloadJob::dispatch($job->uuid)
-            ->onQueue(config('downloader.queues.download'));
+        ProcessDownloadJob::dispatch($job->uuid)->onQueue(config('downloader.queues.download'));
 
         return response()->json(['uuid' => $job->uuid, 'status' => DownloadStatus::Processing->value]);
     }
