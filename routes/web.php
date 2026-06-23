@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\CookieController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DownloadLogController;
+use App\Http\Controllers\Admin\LandingPageController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Api\BatchController;
 use App\Http\Controllers\Api\DownloadController;
@@ -58,20 +59,24 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('admin')->group(function () {
         Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
         Route::get('logs', [DownloadLogController::class, 'index'])->name('logs');
-    });
 
-    Route::get('cookies', [CookieController::class, 'index'])->name('cookies.index');
-    Route::get('cookies/{platform:slug}', [CookieController::class, 'show'])->name('cookies.show');
-    Route::post('cookies/{platform:slug}', [CookieController::class, 'store'])->name('cookies.store');
-    Route::delete('cookies/{platform:slug}/{file}', [CookieController::class, 'destroy'])->name('cookies.destroy');
+        Route::get('cookies', [CookieController::class, 'index'])->name('cookies.index');
+        Route::get('cookies/{platform:slug}', [CookieController::class, 'show'])->name('cookies.show');
+        Route::post('cookies/{platform:slug}', [CookieController::class, 'store'])->name('cookies.store');
+        Route::delete('cookies/{platform:slug}/{file}', [CookieController::class, 'destroy'])->name('cookies.destroy');
 
-    Route::prefix('settings')->name('settings.')->group(function () {
-        Route::get('download', [SettingsController::class, 'download'])->name('download');
-        Route::post('download', [SettingsController::class, 'updateDownload'])->name('download.update');
-        Route::get('ads', [SettingsController::class, 'ads'])->name('ads');
-        Route::post('ads', [SettingsController::class, 'updateAds'])->name('ads.update');
-        Route::get('seo', [SettingsController::class, 'seo'])->name('seo');
-        Route::post('seo', [SettingsController::class, 'updateSeo'])->name('seo.update');
+        Route::prefix('settings')->name('settings.')->group(function () {
+            Route::get('download', [SettingsController::class, 'download'])->name('download');
+            Route::post('download', [SettingsController::class, 'updateDownload'])->name('download.update');
+            Route::get('ads', [SettingsController::class, 'ads'])->name('ads');
+            Route::post('ads', [SettingsController::class, 'updateAds'])->name('ads.update');
+            Route::get('seo', [SettingsController::class, 'seo'])->name('seo');
+            Route::post('seo', [SettingsController::class, 'updateSeo'])->name('seo.update');
+        });
+
+        Route::get('landing-pages', [LandingPageController::class, 'index'])->name('landing.index');
+        Route::get('landing-pages/{platform}/edit', [LandingPageController::class, 'edit'])->name('landing.edit');
+        Route::put('landing-pages/{platform}', [LandingPageController::class, 'update'])->name('landing.update');
     });
 });
 

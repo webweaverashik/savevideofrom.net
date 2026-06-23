@@ -157,3 +157,44 @@
         transition: none;
     }
 }
+
+/* Scroll-to-top button */
+.scroll-top {
+    position: fixed;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    z-index: 50;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: linear-gradient(135deg, #7c3aed, #db2777);
+    box-shadow: 0 12px 24px -6px rgba(124, 58, 237, 0.55);
+    opacity: 0;
+    transform: translateY(16px) scale(0.9);
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.scroll-top.show {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+}
+
+.scroll-top.show:hover {
+    transform: translateY(-3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .scroll-top {
+        transition: opacity 0.2s ease;
+    }
+
+    .scroll-top.show:hover {
+        transform: none;
+    }
+}

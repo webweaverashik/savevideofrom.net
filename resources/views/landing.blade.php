@@ -1,7 +1,11 @@
 @extends('layouts.app')
 
 @section('title', ($platform->meta_title ?: $platform->name . ' Video Downloader') . ' | SaveVideoFrom.net')
-@section('description', $platform->meta_description ?: 'Download ' . $platform->name . ' videos free in HD. Fast, no
+@section('description',
+    $platform->meta_description ?:
+    'Download ' .
+    $platform->name .
+    ' videos free in HD. Fast, no
     sign-up.')
 
 @section('content')
@@ -57,6 +61,10 @@
             @endforeach
         </section>
     @endif
+
+    @include('partials.popular-websites')
+    @include('partials.supported-sites')
+    @include('partials.seo-sections')
 
     @if ($related->isNotEmpty())
         <section class="reveal-on-scroll max-w-4xl mx-auto px-4 pb-20">

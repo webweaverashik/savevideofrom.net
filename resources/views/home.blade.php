@@ -52,6 +52,10 @@
         </div>
     </section>
 
+    @include('partials.popular-websites')
+    @include('partials.supported-sites')
+    @include('partials.seo-sections')
+
     <section class="reveal-on-scroll max-w-4xl mx-auto px-4 pb-16">
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <x-feature-card icon="bolt" title="Fast & free">No limits, no fees, no account — just paste and
@@ -78,4 +82,6 @@
         <x-faq-item question="Is it legal?">Download only content you own or have permission to use, and respect each
             platform's terms and copyright.</x-faq-item>
     </section>
+
+    @include('partials.keywords')
 @endsection

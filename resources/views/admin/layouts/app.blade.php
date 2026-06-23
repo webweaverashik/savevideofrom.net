@@ -29,6 +29,7 @@
                 ['admin.logs', 'Download Logs', 'list', true],
                 ['admin.cookies.index', 'Cookies', 'key', true],
             ],
+            'Content' => [['admin.landing.index', 'Landing Pages', 'globe', true]],
             'Settings' => [
                 ['admin.settings.download', 'Download', 'sliders', true],
                 ['admin.settings.ads', 'Ads & AdSense', 'megaphone', true],
@@ -89,7 +90,7 @@
     <label for="navToggle" class="fixed inset-0 z-30 bg-black/40 hidden peer-checked:block lg:hidden"></label>
 
     <div class="lg:pl-64">
-        <main class="max-w-5xl mx-auto px-4 py-8">
+        <main class="px-4 sm:px-6 lg:px-8 py-8">
             <h1 class="font-display text-2xl font-bold mb-6">@yield('title', 'Dashboard')</h1>
 
             @if (session('success'))

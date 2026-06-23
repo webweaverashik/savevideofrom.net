@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             PlatformSeeder::class,
+            ContentSeeder::class,
             SiteSettingSeeder::class,
             AdminSeeder::class,
         ]);

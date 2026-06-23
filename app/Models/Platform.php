@@ -12,7 +12,7 @@ class Platform extends Model
     protected $fillable = [
         'slug', 'page_slug', 'name', 'domain_patterns', 'icon', 'color',
         'is_active', 'is_featured', 'is_published', 'sort_order',
-        'meta_title', 'meta_description', 'h1', 'intro', 'howto', 'faqs',
+        'meta_title', 'meta_description', 'h1', 'intro', 'card_description', 'howto', 'faqs', 'howto', 'faqs',
     ];
 
     protected function casts(): array

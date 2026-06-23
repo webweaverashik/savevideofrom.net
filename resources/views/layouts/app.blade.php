@@ -103,6 +103,10 @@
             </div>
         </div>
     </footer>
+
+    <button id="scrollTop" type="button" aria-label="Scroll to top" class="scroll-top">
+        <x-icon name="arrow-up" class="w-5 h-5" />
+    </button>
 </body>
 
 </html>
