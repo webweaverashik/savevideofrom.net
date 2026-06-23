@@ -65,9 +65,9 @@ class MenuSeeder extends Seeder
 
         $legal = MenuItem::create(['label' => 'Legal', 'location' => 'footer', 'sort_order' => 2]);
         foreach ([
-            ['Privacy Policy', '#'],
-            ['Terms of Service', '#'],
-            ['Contact', '#'],
+            ['Privacy Policy', 'privacy-policy'],
+            ['Terms of Service', 'terms-of-service'],
+            ['Contact', 'contact'],
         ] as $i => [$label, $url]) {
             MenuItem::create(['label' => $label, 'url' => $url, 'location' => 'footer', 'parent_id' => $legal->id, 'sort_order' => $i]);
         }
