@@ -92,4 +92,24 @@ class SettingsController extends Controller
 
         return back()->with('success', 'SEO settings saved.');
     }
+
+    public function contact(): View
+    {
+        return view('admin.settings.contact', ['s' => $this->settings]);
+    }
+
+    public function updateContact(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'contact_email'   => ['nullable', 'email', 'max:150'],
+            'contact_phone'   => ['nullable', 'string', 'max:50'],
+            'contact_address' => ['nullable', 'string', 'max:300'],
+        ]);
+
+        foreach (['contact_email', 'contact_phone', 'contact_address'] as $key) {
+            $this->settings->set($key, (string) $request->input($key), 'text', 'contact');
+        }
+
+        return back()->with('success', 'Contact info saved.');
+    }
 }

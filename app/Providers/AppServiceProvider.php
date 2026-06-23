@@ -38,5 +38,6 @@ class AppServiceProvider extends ServiceProvider
     {
         RateLimiter::for('extract', fn(Request $r) => Limit::perMinute(10)->by($r->ip()));
         RateLimiter::for('download', fn(Request $r) => Limit::perMinute(20)->by($r->ip()));
+        RateLimiter::for('contact', fn(Request $r) => Limit::perMinute(5)->by($r->ip()));
     }
 }

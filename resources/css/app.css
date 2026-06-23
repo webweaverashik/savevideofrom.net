@@ -198,3 +198,60 @@
         transform: none;
     }
 }
+
+/* Rich-text page content (privacy / terms / contact) */
+.page-content {
+    line-height: 1.75;
+}
+
+.page-content h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 1.75rem 0 .75rem;
+}
+
+.page-content h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 1.25rem 0 .5rem;
+}
+
+.page-content p {
+    margin: .85rem 0;
+}
+
+.page-content ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+    margin: .85rem 0;
+}
+
+.page-content ol {
+    list-style: decimal;
+    padding-left: 1.5rem;
+    margin: .85rem 0;
+}
+
+.page-content a {
+    color: #7c3aed;
+    text-decoration: underline;
+}
+
+.page-content blockquote {
+    border-left: 3px solid #7c3aed;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    color: #6b7280;
+}
+
+.page-content strong {
+    font-weight: 600;
+}
+
+/* Desktop nav dropdown opens on hover */
+@media (hover: hover) and (min-width: 1024px) {
+    .nav-dropdown:hover [data-dropdown-panel] {
+        display: block;
+    }
+}

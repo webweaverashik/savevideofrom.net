@@ -24,20 +24,24 @@
 
     @php
         $nav = [
-            'Overview' => [['admin.dashboard', 'Dashboard', 'chart', false]],
+            'Overview' => [['admin.dashboard', 'Dashboard', 'chart', 'admin.dashboard']],
             'Downloads' => [
-                ['admin.logs', 'Download Logs', 'list', true],
-                ['admin.cookies.index', 'Cookies', 'key', true],
+                ['admin.logs', 'Download Logs', 'list', 'admin.logs*'],
+                ['admin.cookies.index', 'Cookies', 'key', 'admin.cookies.*'],
             ],
             'Content' => [
-                ['admin.landing.index', 'Landing Pages', 'globe', true],
-                ['admin.sites.index', 'Supported Sites', 'list', true],
-                ['admin.menus.index', 'Menus', 'link', true],
+                ['admin.landing.index', 'Landing Pages', 'globe', 'admin.landing.*'],
+                ['admin.sites.index', 'Supported Sites', 'list', 'admin.sites.*'],
+                ['admin.menus.index', 'Menus', 'link', 'admin.menus.*'],
+                ['admin.pages.index', 'Pages', 'document', 'admin.pages.*'],
+                ['admin.keywords.edit', 'Keywords', 'search', 'admin.keywords.*'],
             ],
+            'Messages' => [['admin.messages.index', 'Contact Messages', 'envelope', 'admin.messages.*']],
             'Settings' => [
-                ['admin.settings.download', 'Download', 'sliders', true],
-                ['admin.settings.ads', 'Ads & AdSense', 'megaphone', true],
-                ['admin.settings.seo', 'SEO', 'search', true],
+                ['admin.settings.download', 'Download', 'sliders', 'admin.settings.download*'],
+                ['admin.settings.ads', 'Ads & AdSense', 'megaphone', 'admin.settings.ads*'],
+                ['admin.settings.seo', 'SEO', 'search', 'admin.settings.seo*'],
+                ['admin.settings.contact', 'Contact Info', 'link', 'admin.settings.contact*'],
             ],
         ];
     @endphp
@@ -67,8 +71,8 @@
                 <div>
                     <p class="px-3 mb-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400">
                         {{ $group }}</p>
-                    @foreach ($items as [$route, $label, $icon, $wildcard])
-                        @php $active = $wildcard ? request()->routeIs($route . '*') : request()->routeIs($route); @endphp
+                    @foreach ($items as [$route, $label, $icon, $match])
+                        @php $active = request()->routeIs($match); @endphp
                         <a href="{{ route($route) }}"
                             class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition
                         {{ $active ? 'bg-violet-600 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5' }}">

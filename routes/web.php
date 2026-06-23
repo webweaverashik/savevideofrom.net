@@ -3,16 +3,21 @@
 declare (strict_types = 1);
 
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\CookieController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DownloadLogController;
+use App\Http\Controllers\Admin\KeywordController;
 use App\Http\Controllers\Admin\LandingPageController;
 use App\Http\Controllers\Admin\MenuController;
+use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\SupportedSiteController;
 use App\Http\Controllers\Api\BatchController;
 use App\Http\Controllers\Api\DownloadController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\SitemapController;
 use App\Models\Platform;
 use Illuminate\Support\Facades\Route;
@@ -74,6 +79,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('ads', [SettingsController::class, 'updateAds'])->name('ads.update');
             Route::get('seo', [SettingsController::class, 'seo'])->name('seo');
             Route::post('seo', [SettingsController::class, 'updateSeo'])->name('seo.update');
+            Route::get('contact', [SettingsController::class, 'contact'])->name('contact');
+            Route::post('contact', [SettingsController::class, 'updateContact'])->name('contact.update');
         });
 
         Route::get('landing-pages', [LandingPageController::class, 'index'])->name('landing.index');
@@ -82,8 +89,24 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::resource('sites', SupportedSiteController::class)->except(['show']);
         Route::resource('menus', MenuController::class)->except(['show']);
+
+        Route::get('pages', [AdminPageController::class, 'index'])->name('pages.index');
+        Route::get('pages/{page}/edit', [AdminPageController::class, 'edit'])->name('pages.edit');
+        Route::put('pages/{page}', [AdminPageController::class, 'update'])->name('pages.update');
+
+        Route::get('messages', [ContactMessageController::class, 'index'])->name('messages.index');
+        Route::get('messages/{message}', [ContactMessageController::class, 'show'])->name('messages.show');
+        Route::delete('messages/{message}', [ContactMessageController::class, 'destroy'])->name('messages.destroy');
+
+        Route::get('keywords', [KeywordController::class, 'edit'])->name('keywords.edit');
+        Route::put('keywords', [KeywordController::class, 'update'])->name('keywords.update');
     });
 });
+
+Route::get('/privacy-policy', [PageController::class, 'show'])->defaults('slug', 'privacy-policy')->name('page.privacy');
+Route::get('/terms-of-service', [PageController::class, 'show'])->defaults('slug', 'terms-of-service')->name('page.terms');
+Route::get('/contact', [ContactController::class, 'show'])->name('contact');
+Route::post('/contact', [ContactController::class, 'submit'])->middleware('throttle:contact')->name('contact.submit');
 
 Route::get('/{page}', [LandingController::class, 'show'])
     ->where('page', '[a-z0-9-]+-downloader')

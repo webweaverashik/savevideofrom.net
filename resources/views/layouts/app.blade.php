@@ -69,7 +69,7 @@
             <nav class="hidden lg:flex items-center gap-1">
                 @foreach (\App\Models\MenuItem::tree('header') as $item)
                     @if ($item->children->isNotEmpty())
-                        <div class="relative">
+                        <div class="relative nav-dropdown">
                             <button type="button" data-dropdown
                                 class="flex items-center gap-1 px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400">
                                 {{ $item->label }}<x-icon name="chevron-down" class="w-4 h-4" />
