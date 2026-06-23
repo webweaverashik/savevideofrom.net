@@ -41,6 +41,7 @@ class LandingPageController extends Controller
             'faqs'             => ['nullable', 'array'],
             'faqs.*.q'         => ['nullable', 'string', 'max:200'],
             'faqs.*.a'         => ['nullable', 'string', 'max:1000'],
+            'card_description' => ['nullable', 'string', 'max:500'],
         ], [
             'page_slug.regex' => 'The slug must be lowercase words separated by hyphens and end in "-downloader" (e.g. youtube-video-downloader).',
         ]);
@@ -68,6 +69,7 @@ class LandingPageController extends Controller
             'is_featured'      => $request->boolean('is_featured'),
             'howto'            => $howto,
             'faqs'             => $faqs,
+            'card_description' => $data['card_description'],
         ]);
 
         return redirect()

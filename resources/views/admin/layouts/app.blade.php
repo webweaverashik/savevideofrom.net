@@ -29,7 +29,10 @@
                 ['admin.logs', 'Download Logs', 'list', true],
                 ['admin.cookies.index', 'Cookies', 'key', true],
             ],
-            'Content' => [['admin.landing.index', 'Landing Pages', 'globe', true]],
+            'Content' => [
+                ['admin.landing.index', 'Landing Pages', 'globe', true],
+                ['admin.sites.index', 'Supported Sites', 'list', true],
+            ],
             'Settings' => [
                 ['admin.settings.download', 'Download', 'sliders', true],
                 ['admin.settings.ads', 'Ads & AdSense', 'megaphone', true],

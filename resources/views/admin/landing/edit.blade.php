@@ -82,6 +82,12 @@
                 <label class="block text-sm font-medium mb-1">Intro paragraph</label>
                 <textarea name="intro" rows="3" class="{{ $field }}">{{ old('intro', $platform->intro) }}</textarea>
             </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Popular-websites card description</label>
+                <textarea name="card_description" rows="2" class="{{ $field }}">{{ old('card_description', $platform->card_description) }}</textarea>
+                <p class="text-xs text-gray-500 mt-1">Short blurb shown in the “Popular Websites” grid on the homepage and
+                    landing pages. Leave blank to hide this platform from that grid.</p>
+            </div>
         </div>
 
         {{-- How-to --}}

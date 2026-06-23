@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DownloadLogController;
 use App\Http\Controllers\Admin\LandingPageController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\SupportedSiteController;
 use App\Http\Controllers\Api\BatchController;
 use App\Http\Controllers\Api\DownloadController;
 use App\Http\Controllers\LandingController;
@@ -77,6 +78,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('landing-pages', [LandingPageController::class, 'index'])->name('landing.index');
         Route::get('landing-pages/{platform}/edit', [LandingPageController::class, 'edit'])->name('landing.edit');
         Route::put('landing-pages/{platform}', [LandingPageController::class, 'update'])->name('landing.update');
+
+        Route::resource('sites', SupportedSiteController::class)->except(['show']);
     });
 });
 
