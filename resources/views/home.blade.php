@@ -3,7 +3,7 @@
 @section('content')
     <section class="relative overflow-hidden">
         <div class="hero-glow absolute inset-x-0 -top-20 h-96 pointer-events-none" aria-hidden="true"></div>
-        <div class="relative max-w-3xl mx-auto px-4 pt-16 pb-10 text-center">
+        <div class="relative max-w-4xl mx-auto px-4 pt-16 pb-10 text-center">
             <h1 class="font-display text-4xl sm:text-5xl font-bold tracking-tight leading-tight">
                 Download video from <span class="text-gradient">any site</span>
             </h1>
@@ -21,7 +21,7 @@
         </div>
     </section>
 
-    <section class="reveal-on-scroll max-w-4xl mx-auto px-4 py-12">
+    <section class="reveal-on-scroll max-w-6xl mx-auto px-4 py-12">
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <x-stat value="1,000+" label="Supported sites" />
             <x-stat value="4K" label="Max video quality" />
@@ -30,7 +30,7 @@
         </div>
     </section>
 
-    <section class="reveal-on-scroll max-w-4xl mx-auto px-4 py-12">
+    <section class="reveal-on-scroll max-w-6xl mx-auto px-4 py-12">
         <h2 class="font-display text-2xl font-bold text-center">Works with everything</h2>
         <p class="text-center text-gray-500 mt-2 mb-8 max-w-lg mx-auto">From social feeds to long-form video — one
             downloader for all of it.</p>
@@ -41,7 +41,7 @@
         </div>
     </section>
 
-    <section id="how" class="reveal-on-scroll max-w-4xl mx-auto px-4 py-16">
+    <section id="how" class="reveal-on-scroll max-w-6xl mx-auto px-4 py-16">
         <h2 class="font-display text-2xl font-bold text-center mb-10">How it works</h2>
         <div class="grid sm:grid-cols-3 gap-8">
             <x-step number="01" title="Paste the link">Copy a video URL from any supported site and drop it in the
@@ -56,7 +56,7 @@
     @include('partials.supported-sites')
     @include('partials.seo-sections')
 
-    <section class="reveal-on-scroll max-w-4xl mx-auto px-4 pb-16">
+    <section class="reveal-on-scroll max-w-6xl mx-auto px-4 pb-16">
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <x-feature-card icon="bolt" title="Fast & free">No limits, no fees, no account — just paste and
                 go.</x-feature-card>
@@ -69,7 +69,7 @@
         </div>
     </section>
 
-    <section id="faq" class="reveal-on-scroll max-w-3xl mx-auto px-4 pb-20">
+    <section id="faq" class="reveal-on-scroll max-w-4xl mx-auto px-4 pb-20">
         <h2 class="font-display text-2xl font-bold text-center mb-8">Frequently asked questions</h2>
         <x-faq-item question="Is SaveVideoFrom free?">Yes — completely free, with no limits and no
             registration.</x-faq-item>

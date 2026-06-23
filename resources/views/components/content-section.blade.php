@@ -1,6 +1,6 @@
 @props(['image' => null, 'title', 'reverse' => false])
 
-<section class="reveal-on-scroll max-w-5xl mx-auto px-4 py-12">
+<section class="reveal-on-scroll max-w-6xl mx-auto px-4 py-12">
     <div class="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
         @if ($image)
             <div class="{{ $reverse ? 'md:order-2' : '' }}">

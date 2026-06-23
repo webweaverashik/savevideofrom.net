@@ -32,6 +32,7 @@
             'Content' => [
                 ['admin.landing.index', 'Landing Pages', 'globe', true],
                 ['admin.sites.index', 'Supported Sites', 'list', true],
+                ['admin.menus.index', 'Menus', 'link', true],
             ],
             'Settings' => [
                 ['admin.settings.download', 'Download', 'sliders', true],

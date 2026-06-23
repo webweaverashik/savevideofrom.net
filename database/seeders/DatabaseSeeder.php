@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             PlatformSeeder::class,
             ContentSeeder::class,
             SiteSettingSeeder::class,
+            MenuSeeder::class,
             AdminSeeder::class,
         ]);
     }

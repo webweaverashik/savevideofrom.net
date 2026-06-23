@@ -60,44 +60,108 @@
 
     <header
         class="sticky top-0 z-30 backdrop-blur border-b border-gray-200/70 dark:border-white/10 bg-[#FAFAFB]/80 dark:bg-[#0B0B12]/80">
-        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-            <a href="{{ route('home') }}" class="font-display text-lg font-bold tracking-tight">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
+            <a href="{{ route('home') }}" class="font-display text-lg font-bold tracking-tight shrink-0">
                 SaveVideoFrom<span class="text-gradient">.net</span>
             </a>
-            <div class="flex items-center gap-1 sm:gap-3">
-                <a href="#how"
-                    class="hidden sm:inline-block text-sm text-gray-600 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400 px-3 py-2">How
-                    it works</a>
-                <a href="#faq"
-                    class="hidden sm:inline-block text-sm text-gray-600 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400 px-3 py-2">FAQ</a>
+
+            {{-- Desktop nav --}}
+            <nav class="hidden lg:flex items-center gap-1">
+                @foreach (\App\Models\MenuItem::tree('header') as $item)
+                    @if ($item->children->isNotEmpty())
+                        <div class="relative">
+                            <button type="button" data-dropdown
+                                class="flex items-center gap-1 px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400">
+                                {{ $item->label }}<x-icon name="chevron-down" class="w-4 h-4" />
+                            </button>
+                            <div data-dropdown-panel
+                                class="hidden absolute right-0 mt-1 w-56 rounded-xl border border-gray-200/70 dark:border-white/10 bg-white dark:bg-[#14141F] shadow-lg p-1 z-40">
+                                @foreach ($item->children as $child)
+                                    <a href="{{ $child->url }}"
+                                        @if ($child->open_new_tab) target="_blank" rel="noopener" @endif
+                                        class="block px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5">{{ $child->label }}</a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @else
+                        <a href="{{ $item->url }}"
+                            @if ($item->open_new_tab) target="_blank" rel="noopener" @endif
+                            class="px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400">{{ $item->label }}</a>
+                    @endif
+                @endforeach
+            </nav>
+
+            <div class="flex items-center gap-2">
                 <button id="themeToggle" type="button" aria-label="Toggle theme"
                     class="w-9 h-9 inline-flex items-center justify-center rounded-lg border border-gray-200 dark:border-white/10 hover:bg-gray-100 dark:hover:bg-white/5 transition">
                     <x-icon name="sun" class="w-5 h-5 hidden dark:block" />
                     <x-icon name="moon" class="w-5 h-5 block dark:hidden" />
                 </button>
+                <button id="navBurger" type="button" aria-label="Menu" aria-expanded="false"
+                    class="lg:hidden w-9 h-9 inline-flex items-center justify-center rounded-lg border border-gray-200 dark:border-white/10">
+                    <x-icon name="list" class="w-5 h-5" />
+                </button>
             </div>
+        </div>
+
+        {{-- Mobile nav --}}
+        <div id="mobileNav"
+            class="hidden lg:hidden border-t border-gray-200/70 dark:border-white/10 px-4 py-3 space-y-1">
+            @foreach (\App\Models\MenuItem::tree('header') as $item)
+                @if ($item->children->isNotEmpty())
+                    <button type="button" data-mobile-sub
+                        class="w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5">
+                        {{ $item->label }}<x-icon name="chevron-down" class="w-4 h-4" />
+                    </button>
+                    <div class="hidden pl-3 space-y-1">
+                        @foreach ($item->children as $child)
+                            <a href="{{ $child->url }}"
+                                @if ($child->open_new_tab) target="_blank" rel="noopener" @endif
+                                class="block px-3 py-2 text-sm rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5">{{ $child->label }}</a>
+                        @endforeach
+                    </div>
+                @else
+                    <a href="{{ $item->url }}"
+                        @if ($item->open_new_tab) target="_blank" rel="noopener" @endif
+                        class="block px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5">{{ $item->label }}</a>
+                @endif
+            @endforeach
         </div>
     </header>
 
-    <div class="max-w-3xl mx-auto px-4"><x-ad slot="header" /></div>
+    <div class="max-w-5xl mx-auto w-full px-4"><x-ad slot="header" /></div>
+
     <main class="flex-1">
         @yield('content')
     </main>
-    <div class="max-w-3xl mx-auto px-4"><x-ad slot="footer" /></div>
+
+    <div class="max-w-5xl mx-auto w-full px-4"><x-ad slot="footer" /></div>
 
     <footer class="border-t border-gray-200/70 dark:border-white/10 mt-20">
-        <div class="max-w-5xl mx-auto px-4 py-10">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="max-w-7xl mx-auto px-4 py-12">
+            <div class="grid gap-8 md:grid-cols-4">
                 <div>
                     <p class="font-display font-bold">SaveVideoFrom<span class="text-gradient">.net</span></p>
-                    <p class="text-sm text-gray-500 mt-1">Free universal video downloader.</p>
+                    <p class="text-sm text-gray-500 mt-2 leading-relaxed">Free universal video downloader. Save videos,
+                        audio, and images from across the web — fast, free, and no sign-up.</p>
                 </div>
-                <p class="text-sm text-gray-400 dark:text-gray-500 flex flex-wrap gap-x-3 gap-y-1">
-                    <span>YouTube</span><span>Facebook</span><span>Instagram</span><span>TikTok</span><span>X</span><span>Reddit</span>
-                </p>
+                @foreach (\App\Models\MenuItem::tree('footer') as $col)
+                    <div>
+                        <p class="font-semibold text-sm mb-3">{{ $col->label }}</p>
+                        <ul class="space-y-2">
+                            @foreach ($col->children as $link)
+                                <li>
+                                    <a href="{{ $link->url }}"
+                                        @if ($link->open_new_tab) target="_blank" rel="noopener" @endif
+                                        class="text-sm text-gray-500 hover:text-violet-600 dark:hover:text-violet-400">{{ $link->label }}</a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endforeach
             </div>
             <div
-                class="mt-8 pt-6 border-t border-gray-200/70 dark:border-white/10 text-center text-xs text-gray-400 dark:text-gray-500">
+                class="mt-10 pt-6 border-t border-gray-200/70 dark:border-white/10 text-center text-xs text-gray-400 dark:text-gray-500">
                 &copy; {{ date('Y') }} SaveVideoFrom.net. Not affiliated with any platform. Download only content
                 you have the right to.
             </div>

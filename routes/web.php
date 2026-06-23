@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\CookieController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DownloadLogController;
 use App\Http\Controllers\Admin\LandingPageController;
+use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\SupportedSiteController;
 use App\Http\Controllers\Api\BatchController;
@@ -80,6 +81,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('landing-pages/{platform}', [LandingPageController::class, 'update'])->name('landing.update');
 
         Route::resource('sites', SupportedSiteController::class)->except(['show']);
+        Route::resource('menus', MenuController::class)->except(['show']);
     });
 });
 
