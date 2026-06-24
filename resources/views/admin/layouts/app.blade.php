@@ -43,6 +43,7 @@
                 ['admin.settings.seo', 'SEO', 'search', 'admin.settings.seo*'],
                 ['admin.settings.contact', 'Contact Info', 'link', 'admin.settings.contact*'],
             ],
+            'Account' => [['admin.account.edit', 'My Account', 'user', 'admin.account.*']],
         ];
     @endphp
 

@@ -81,11 +81,14 @@ class SettingsController extends Controller
             'og_image'                 => ['nullable', 'url', 'max:300'],
             'google_analytics_id'      => ['nullable', 'string', 'max:40'],
             'google_site_verification' => ['nullable', 'string', 'max:120'],
+            'google_tag_manager_id'    => ['nullable', 'string', 'max:20'],
+            'bing_verification'        => ['nullable', 'string', 'max:120'],
         ]);
 
         foreach ([
             'default_meta_title', 'default_meta_description', 'default_meta_keywords',
             'og_image', 'google_analytics_id', 'google_site_verification',
+            'google_tag_manager_id', 'bing_verification',
         ] as $key) {
             $this->settings->set($key, (string) $request->input($key), 'text', 'seo');
         }

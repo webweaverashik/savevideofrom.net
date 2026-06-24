@@ -5,7 +5,7 @@
     <form method="POST" action="{{ route('admin.settings.seo.update') }}" class="max-w-2xl space-y-5">
         @csrf
         <div class="rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white dark:bg-white/[0.03] p-6 space-y-5">
-            @foreach ([['default_meta_title', 'Default meta title', 'text'], ['default_meta_description', 'Default meta description', 'textarea'], ['default_meta_keywords', 'Default meta keywords', 'text'], ['og_image', 'Open Graph image URL', 'text'], ['google_analytics_id', 'Google Analytics ID', 'text'], ['google_site_verification', 'Google site verification code', 'text']] as [$key, $label, $type])
+            @foreach ([['default_meta_title', 'Default meta title', 'text'], ['default_meta_description', 'Default meta description', 'textarea'], ['default_meta_keywords', 'Default meta keywords', 'text'], ['og_image', 'Open Graph image URL', 'text'], ['google_analytics_id', 'Google Analytics ID', 'text'], ['google_site_verification', 'Google site verification code', 'text'], ['google_tag_manager_id', 'Google Tag Manager ID (GTM-XXXX)', 'text'], ['bing_verification', 'Bing site verification code', 'text']] as [$key, $label, $type])
                 <div>
                     <label class="block text-sm font-medium mb-1">{{ $label }}</label>
                     @if ($type === 'textarea')

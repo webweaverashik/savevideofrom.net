@@ -2,6 +2,7 @@
 
 declare (strict_types = 1);
 
+use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\CookieController;
@@ -100,6 +101,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('keywords', [KeywordController::class, 'edit'])->name('keywords.edit');
         Route::put('keywords', [KeywordController::class, 'update'])->name('keywords.update');
+
+        Route::get('account', [AccountController::class, 'edit'])->name('account.edit');
+        Route::put('account', [AccountController::class, 'update'])->name('account.update');
+        Route::put('account/password', [AccountController::class, 'password'])->name('account.password');
     });
 });
 
