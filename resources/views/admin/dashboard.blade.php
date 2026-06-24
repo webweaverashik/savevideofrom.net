@@ -27,12 +27,14 @@
                 <h2 class="font-semibold">Downloads — last 14 days</h2>
                 <span class="text-xs text-gray-500">Success {{ $successRate }}% · Failed {{ $failureRate }}%</span>
             </div>
-            <div class="flex items-end gap-1.5 h-44">
+            <div class="flex items-end gap-1.5">
                 @foreach ($days as $day)
-                    <div class="flex-1 flex flex-col items-center justify-end"
-                        title="{{ $day['date'] }}: {{ $day['count'] }}">
-                        <div class="w-full rounded-t bg-gradient-to-t from-violet-600 to-fuchsia-500"
-                            style="height: {{ $day['count'] ? max(4, round(($day['count'] / $maxDay) * 100)) : 2 }}%"></div>
+                    <div class="flex-1 flex flex-col items-center">
+                        <div class="w-full h-44 flex items-end" title="{{ $day['date'] }}: {{ $day['count'] }}">
+                            <div class="w-full rounded-t bg-gradient-to-t from-violet-600 to-fuchsia-500"
+                                style="height: {{ $day['count'] ? max(4, round(($day['count'] / $maxDay) * 100)) : 2 }}%">
+                            </div>
+                        </div>
                         <span class="text-[10px] text-gray-400 mt-1">{{ (int) substr($day['date'], 8, 2) }}</span>
                     </div>
                 @endforeach
