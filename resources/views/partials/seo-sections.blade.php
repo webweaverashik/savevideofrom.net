@@ -1,14 +1,11 @@
 @php
     $img = [
-        'about' => 'https://savevideofrom.net/wp-content/uploads/2026/04/save-video-from-768x960.avif',
-        'quality' => 'https://savevideofrom.net/wp-content/uploads/2026/04/save-video-from-2-1024x724.avif',
-        'fourk' =>
-            'https://savevideofrom.net/wp-content/uploads/2026/05/Save-Video-From-Any-Website-From-SD-to-4k-Resolution-1024x1024.avif',
-        'browser' => 'https://savevideofrom.net/wp-content/uploads/2026/05/Save-Video-From-Any-Browser-1024x573.avif',
-        'device' =>
-            'https://savevideofrom.net/wp-content/uploads/2026/05/Save-Any-Videos-on-Android-Phone-Tablet-Desktop-of-iPhone-1024x573.avif',
-        'legal' =>
-            'https://savevideofrom.net/wp-content/uploads/2026/05/Save-Video-From-Is-It-Legal-Image-1024x1024.avif',
+        'about' => asset('images/save-video-from.avif'),
+        'quality' => asset('images/save-video-from-2.avif'),
+        'fourk' => asset('images/Save-Video-From-Any-Website-From-SD-to-4k-Resolution.avif'),
+        'browser' => asset('images/Save-Video-From-Any-Browser.avif'),
+        'device' => asset('images/Save-Any-Videos-on-Android-Phone-Tablet-Desktop-of-iPhone.avif'),
+        'legal' => asset('images/Save-Video-From-Is-It-Legal-Image.avif'),
     ];
 @endphp
 
