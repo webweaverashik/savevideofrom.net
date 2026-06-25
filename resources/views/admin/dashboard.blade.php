@@ -52,6 +52,8 @@
                 <p class="text-sm text-gray-500">No downloads yet.</p>
             @endforelse
         </div>
+
+
     </div>
 
     <div
@@ -85,10 +87,16 @@
                             <td class="px-5 py-3 text-emerald-600 dark:text-emerald-400">{{ number_format($p->completed) }}
                             </td>
                             <td class="px-5 py-3 text-red-600 dark:text-red-400">{{ number_format($p->failed) }}</td>
+                            @php
+                                $rate = $p->success_rate;
+                                $color = $rate >= 80 ? '#10b981' : ($rate >= 50 ? '#f59e0b' : '#ef4444');
+                            @endphp
                             <td class="px-5 py-3">
                                 <div class="flex items-center gap-2">
                                     <div class="flex-1 h-2 rounded-full bg-gray-200 dark:bg-white/10 overflow-hidden">
-                                        <div class="h-full {{ $bar }}" style="width: {{ $rate }}%"></div>
+                                        <div class="h-full rounded-full"
+                                            style="width: {{ $rate }}%; background-color: {{ $color }};">
+                                        </div>
                                     </div>
                                     <span class="text-xs text-gray-500 w-10 text-right">{{ $rate }}%</span>
                                 </div>

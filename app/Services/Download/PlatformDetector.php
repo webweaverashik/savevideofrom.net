@@ -46,10 +46,23 @@ class PlatformDetector
             }
         }
 
-        // Fallback: second-level domain as a generic slug (e.g. "example").
-        $parts = explode('.', $host);
+        // Fallback: use the registrable domain label, never the TLD.
+        $parts = array_values(array_filter(explode('.', $host)));
         $count = count($parts);
 
-        return $count >= 2 ? $parts[$count - 2] : $host;
+        if ($count >= 2) {
+            // For host like "foo.co.uk" skip known 2-part TLDs; otherwise take the SLD.
+            $twoPartTlds = ['co.uk', 'com.au', 'co.in', 'com.br', 'co.jp'];
+            $lastTwo     = $parts[$count - 2] . '.' . $parts[$count - 1];
+            $slug        = in_array($lastTwo, $twoPartTlds, true) && $count >= 3
+                ? $parts[$count - 3]
+                : $parts[$count - 2];
+        } else {
+            $slug = $host;
+        }
+
+        // Guard against degenerate slugs (TLDs, empties).
+        $bad = ['com', 'net', 'org', 'www', 'co', 'io', 'tv', ''];
+        return in_array($slug, $bad, true) ? 'other' : $slug;
     }
 }
