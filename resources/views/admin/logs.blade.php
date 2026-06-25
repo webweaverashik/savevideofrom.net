@@ -20,6 +20,18 @@
         <button class="rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-sm px-4 py-2">Filter</button>
     </form>
 
+    @if ($errorBreakdown->isNotEmpty())
+        <div class="mb-5 flex flex-wrap gap-2">
+            @foreach ($errorBreakdown as $e)
+                <span
+                    class="rounded-full border border-gray-200/70 dark:border-white/10 bg-white dark:bg-white/[0.03] px-3 py-1.5 text-xs">
+                    <span class="font-mono text-red-600 dark:text-red-400">{{ $e->error_type }}</span>
+                    <span class="text-gray-400">·</span> {{ $e->c }}
+                </span>
+            @endforeach
+        </div>
+    @endif
+
     <div class="rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white dark:bg-white/[0.03] overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
@@ -55,8 +67,22 @@
                                     {{ $job->status->label() }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 max-w-xs truncate text-gray-600 dark:text-gray-400">
-                                {{ $job->status->value === 'failed' ? $job->error_message : $job->title }}
+                            <td class="px-4 py-3 max-w-md">
+                                @if ($job->status->value === 'failed')
+                                    <div class="space-y-1">
+                                        <span
+                                            class="inline-block rounded px-2 py-0.5 text-xs font-mono bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400">{{ $job->error_type ?? 'error' }}</span>
+                                        <p class="text-xs text-gray-500 line-clamp-2">{{ $job->error_message }}</p>
+                                        <details class="text-xs">
+                                            <summary class="cursor-pointer text-violet-600 dark:text-violet-400">URL
+                                            </summary>
+                                            <p class="mt-1 font-mono break-all text-gray-400">{{ $job->url }}</p>
+                                        </details>
+                                    </div>
+                                @else
+                                    <span
+                                        class="text-gray-600 dark:text-gray-400 truncate block">{{ $job->title }}</span>
+                                @endif
                             </td>
                         </tr>
                     @empty

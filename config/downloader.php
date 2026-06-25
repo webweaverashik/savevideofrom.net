@@ -63,12 +63,23 @@ return [
     */
     'allowed_schemes'   => ['http', 'https'],
 
-
     /*
     |--------------------------------------------------------------------------
     | Max playlist videos
     |--------------------------------------------------------------------------
     */
-    'max_batch_items' => (int) env('DOWNLOAD_MAX_BATCH_ITEMS', 50),
+    'max_batch_items'   => (int) env('DOWNLOAD_MAX_BATCH_ITEMS', 50),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Blocked videos
+    |--------------------------------------------------------------------------
+    */
+    'blocked_hosts'     => [
+        'pornhub.com', 'xvideos.com', 'xnxx.com', 'redtube.com', 'youporn.com',
+        'xhamster.com', 'spankbang.com', 'youjizz.com', 'tube8.com', 'tnaflix.com',
+        'porntrex.com', 'eporner.com', 'hclips.com', 'txxx.com', 'beeg.com',
+        'chaturbate.com', 'stripchat.com', 'cam4.com', 'bongacams.com', 'myfreecams.com',
+        'onlyfans.com', 'fansly.com', 'brazzers.com', 'naughtyamerica.com', 'rule34video.com',
+    ],
 ];

@@ -5,6 +5,9 @@ declare (strict_types = 1);
 namespace App\Services\Download;
 
 use App\Enums\MediaType;
+use App\Exceptions\BlockedContentException;
+use App\Exceptions\ExtractionException;
+use App\Exceptions\UnsafeUrlException;
 use App\Models\DownloadJob;
 use App\Services\Download\Contracts\MediaDownloader;
 
@@ -19,7 +22,13 @@ class YtDlpDownloader implements MediaDownloader
 
     public function download(DownloadJob $job): void
     {
-        $this->guard->assertSafe($job->url);
+        try {
+            $this->guard->assertSafe($url);
+        } catch (BlockedContentException $e) {
+            throw new ExtractionException($e->getMessage(), 'blocked', false);
+        } catch (UnsafeUrlException $e) {
+            throw new ExtractionException($e->getMessage(), 'unsafe_url', false);
+        }
 
         $outputDir = rtrim((string) config('downloader.storage_path'), '/\\')
         . DIRECTORY_SEPARATOR . $job->uuid;

@@ -53,4 +53,59 @@
             @endforelse
         </div>
     </div>
+
+    <div
+        class="mt-6 rounded-2xl border border-gray-200/70 dark:border-white/10 bg-white dark:bg-white/[0.03] overflow-hidden">
+        <div class="flex items-center justify-between p-5 border-b border-gray-200/70 dark:border-white/10">
+            <h2 class="font-semibold">Success &amp; failure by platform</h2>
+            <a href="{{ route('admin.logs', ['status' => 'failed']) }}"
+                class="text-sm text-violet-600 dark:text-violet-400 hover:underline">View failed downloads →</a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="text-left text-xs text-gray-500 border-b border-gray-200/70 dark:border-white/10">
+                    <tr>
+                        <th class="px-5 py-3">Platform</th>
+                        <th class="px-5 py-3">Total</th>
+                        <th class="px-5 py-3">Completed</th>
+                        <th class="px-5 py-3">Failed</th>
+                        <th class="px-5 py-3 w-48">Success rate</th>
+                        <th class="px-5 py-3"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($platformStats as $p)
+                        @php
+                            $rate = $p->success_rate;
+                            $bar = $rate >= 80 ? 'bg-emerald-500' : ($rate >= 50 ? 'bg-amber-500' : 'bg-red-500');
+                        @endphp
+                        <tr class="border-b border-gray-100 dark:border-white/5">
+                            <td class="px-5 py-3 font-medium capitalize">{{ $p->platform }}</td>
+                            <td class="px-5 py-3 text-gray-500">{{ number_format($p->total) }}</td>
+                            <td class="px-5 py-3 text-emerald-600 dark:text-emerald-400">{{ number_format($p->completed) }}
+                            </td>
+                            <td class="px-5 py-3 text-red-600 dark:text-red-400">{{ number_format($p->failed) }}</td>
+                            <td class="px-5 py-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="flex-1 h-2 rounded-full bg-gray-200 dark:bg-white/10 overflow-hidden">
+                                        <div class="h-full {{ $bar }}" style="width: {{ $rate }}%"></div>
+                                    </div>
+                                    <span class="text-xs text-gray-500 w-10 text-right">{{ $rate }}%</span>
+                                </div>
+                            </td>
+                            <td class="px-5 py-3 text-right">
+                                <a href="{{ route('admin.logs', ['platform' => $p->platform, 'status' => 'failed']) }}"
+                                    class="text-xs text-violet-600 dark:text-violet-400 hover:underline whitespace-nowrap">Debug
+                                    →</a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="px-5 py-8 text-center text-gray-500">No download data yet.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
 @endsection

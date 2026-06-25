@@ -150,4 +150,9 @@
             <p class="mt-2 text-xs text-gray-500">Link expires after a short time.</p>
         </div>
     </div>
+
+    <p class="mt-3 text-center text-xs text-gray-400 dark:text-gray-500">
+        Adult, explicit, or illegal content is strictly prohibited. Attempts to download such material are blocked and
+        may result in a permanent ban.
+    </p>
 </div>

@@ -34,6 +34,8 @@ class SsrfGuard
 
         $host = $parts['host'];
 
+        $this->assertAllowedContent($host);
+
         // If the host is a literal IP, validate it directly.
         if (filter_var($host, FILTER_VALIDATE_IP)) {
             $this->assertPublicIp($host);
@@ -85,6 +87,19 @@ class SsrfGuard
         // Explicitly block the cloud metadata endpoint.
         if ($isPublic === false || $ip === '169.254.169.254') {
             throw new UnsafeUrlException('URL resolves to a disallowed (private/reserved) address.');
+        }
+    }
+
+    private function assertAllowedContent(string $host): void
+    {
+        $host = strtolower(preg_replace('/^www\./', '', $host));
+
+        foreach ((array) config('downloader.blocked_hosts') as $blocked) {
+            if ($host === $blocked || str_ends_with($host, '.' . $blocked)) {
+                throw new \App\Exceptions\BlockedContentException(
+                    'This site is not supported. Downloading adult or explicit content is prohibited.'
+                );
+            }
         }
     }
 }

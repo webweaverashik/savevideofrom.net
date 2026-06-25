@@ -5,6 +5,9 @@ declare (strict_types = 1);
 namespace App\Services\Download;
 
 use App\DataTransferObjects\MediaInfoDTO;
+use App\Exceptions\BlockedContentException;
+use App\Exceptions\ExtractionException;
+use App\Exceptions\UnsafeUrlException;
 use App\Services\Download\Contracts\MediaExtractor;
 
 class YtDlpExtractor implements MediaExtractor
@@ -17,7 +20,13 @@ class YtDlpExtractor implements MediaExtractor
 
     public function extract(string $url, array $cookieFiles = []): MediaInfoDTO
     {
-        $this->guard->assertSafe($url);
+        try {
+            $this->guard->assertSafe($url);
+        } catch (BlockedContentException $e) {
+            throw new ExtractionException($e->getMessage(), 'blocked', false);
+        } catch (UnsafeUrlException $e) {
+            throw new ExtractionException($e->getMessage(), 'unsafe_url', false);
+        }
 
         $platform = $this->detector->detect($url);
 

@@ -7,6 +7,7 @@ namespace App\Jobs;
 use App\Enums\DownloadStatus;
 use App\Exceptions\ExtractionException;
 use App\Models\DownloadJob as DownloadJobModel;
+use App\Services\Download\ContentPolicy;
 use App\Services\Download\Contracts\MediaExtractor;
 use App\Services\Download\CookieResolver;
 use App\Services\Download\DownloadSettings;
@@ -38,7 +39,17 @@ class ExtractMetadataJob implements ShouldQueue
         $job->update(['status' => DownloadStatus::Extracting]);
 
         try {
+            if (app(ContentPolicy::class)->isBlocked($job->url)) {
+                $job->markFailed('blocked', 'Adult or explicit content is not allowed.');
+                return;
+            }
+
             $info = $extractor->extract($job->url, $cookies->poolFor($job->platform));
+
+            if (app(ContentPolicy::class)->isBlocked($info->title)) {
+                $job->markFailed('blocked', 'Adult or explicit content is not allowed.');
+                return;
+            }
         } catch (ExtractionException $e) {
             if (! $e->retryable) {
                 $job->markFailed($e->errorType, $e->getMessage());

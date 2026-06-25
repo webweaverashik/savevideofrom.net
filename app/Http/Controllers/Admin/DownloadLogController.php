@@ -25,9 +25,16 @@ class DownloadLogController extends Controller
 
         $jobs = $query->paginate(25)->withQueryString();
 
-        $platforms = DownloadJob::whereNotNull('platform')->distinct()->orderBy('platform')->pluck('platform');
-        $statuses  = array_map(static fn($c) => $c->value, DownloadStatus::cases());
+        $platforms      = DownloadJob::whereNotNull('platform')->distinct()->orderBy('platform')->pluck('platform');
+        $statuses       = array_map(static fn($c) => $c->value, DownloadStatus::cases());
+        $errorBreakdown = DownloadJob::selectRaw('error_type, COUNT(*) as c')
+            ->where('status', DownloadStatus::Failed->value)
+            ->when($request->query('platform'), fn($q, $p) => $q->where('platform', $p))
+            ->whereNotNull('error_type')
+            ->groupBy('error_type')
+            ->orderByDesc('c')
+            ->get();
 
-        return view('admin.logs', compact('jobs', 'platforms', 'statuses'));
+        return view('admin.logs', compact('jobs', 'platforms', 'statuses', 'errorBreakdown'));
     }
 }

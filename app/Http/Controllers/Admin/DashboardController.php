@@ -30,6 +30,23 @@ class DashboardController extends Controller
             ->limit(8)
             ->get();
 
+        // Per-platform success/failure breakdown
+        $platformStats = DownloadJob::selectRaw('
+                platform,
+                COUNT(*) as total,
+                SUM(status = ?) as completed,
+                SUM(status = ?) as failed
+            ', [DownloadStatus::Completed->value, DownloadStatus::Failed->value])
+            ->whereNotNull('platform')
+            ->groupBy('platform')
+            ->orderByDesc('total')
+            ->get()
+            ->map(function ($row) {
+                $row->success_rate = $row->total > 0 ? round($row->completed / $row->total * 100, 1) : 0.0;
+                $row->failure_rate = $row->total > 0 ? round($row->failed / $row->total * 100, 1) : 0.0;
+                return $row;
+            });
+
         // Last 14 days, filling gaps in PHP.
         $rows = DownloadJob::selectRaw('DATE(created_at) as d, COUNT(*) as c')
             ->where('created_at', '>=', now()->subDays(13)->startOfDay())
@@ -45,7 +62,7 @@ class DashboardController extends Controller
 
         return view('admin.dashboard', compact(
             'total', 'completed', 'failed', 'today', 'batches',
-            'failureRate', 'successRate', 'perPlatform', 'days', 'maxDay',
+            'failureRate', 'successRate', 'perPlatform', 'platformStats', 'days', 'maxDay',
         ));
     }
 }

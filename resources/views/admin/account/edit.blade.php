@@ -25,7 +25,7 @@
             <div><label class="block text-sm font-medium mb-1">Email</label><input type="email" name="email"
                     value="{{ old('email', $user->email) }}" class="{{ $field }}"></div>
             <button
-                class="rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold px-5 py-2.5 transition">Save
+                class="inline-flex items-center justify-center rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold px-5 py-2.5 transition">Save
                 profile</button>
         </form>
 
@@ -40,7 +40,7 @@
             <div><label class="block text-sm font-medium mb-1">Confirm new password</label><input type="password"
                     name="password_confirmation" class="{{ $field }}"></div>
             <button
-                class="rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-semibold px-5 py-2.5 transition">Change
+                class="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-sm font-semibold px-5 py-2.5 transition">Change
                 password</button>
         </form>
     </div>
