@@ -63,16 +63,16 @@
             <a href="{{ route('admin.logs', ['status' => 'failed']) }}"
                 class="text-sm text-violet-600 dark:text-violet-400 hover:underline">View failed downloads →</a>
         </div>
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto px-15">
             <table class="w-full text-sm">
                 <thead class="text-left text-xs text-gray-500 border-b border-gray-200/70 dark:border-white/10">
                     <tr>
-                        <th class="px-5 py-3">Platform</th>
-                        <th class="px-5 py-3">Total</th>
-                        <th class="px-5 py-3">Completed</th>
-                        <th class="px-5 py-3">Failed</th>
-                        <th class="px-5 py-3 w-48">Success rate</th>
-                        <th class="px-5 py-3"></th>
+                        <th class="px-4 py-3">Platform</th>
+                        <th class="px-4 py-3">Total</th>
+                        <th class="px-4 py-3">Completed</th>
+                        <th class="px-4 py-3">Failed</th>
+                        <th class="px-4 py-3 w-48">Success rate</th>
+                        <th class="px-4 py-3"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -82,16 +82,16 @@
                             $bar = $rate >= 80 ? 'bg-emerald-500' : ($rate >= 50 ? 'bg-amber-500' : 'bg-red-500');
                         @endphp
                         <tr class="border-b border-gray-100 dark:border-white/5">
-                            <td class="px-5 py-3 font-medium capitalize">{{ $p->platform }}</td>
-                            <td class="px-5 py-3 text-gray-500">{{ number_format($p->total) }}</td>
-                            <td class="px-5 py-3 text-emerald-600 dark:text-emerald-400">{{ number_format($p->completed) }}
+                            <td class="px-4 py-3 font-medium capitalize">{{ $p->platform }}</td>
+                            <td class="px-4 py-3 text-gray-500">{{ number_format($p->total) }}</td>
+                            <td class="px-4 py-3 text-emerald-600 dark:text-emerald-400">{{ number_format($p->completed) }}
                             </td>
-                            <td class="px-5 py-3 text-red-600 dark:text-red-400">{{ number_format($p->failed) }}</td>
+                            <td class="px-4 py-3 text-red-600 dark:text-red-400">{{ number_format($p->failed) }}</td>
                             @php
                                 $rate = $p->success_rate;
                                 $color = $rate >= 80 ? '#10b981' : ($rate >= 50 ? '#f59e0b' : '#ef4444');
                             @endphp
-                            <td class="px-5 py-3">
+                            <td class="px-4 py-3">
                                 <div class="flex items-center gap-2">
                                     <div class="flex-1 h-2 rounded-full bg-gray-200 dark:bg-white/10 overflow-hidden">
                                         <div class="h-full rounded-full"
@@ -101,7 +101,7 @@
                                     <span class="text-xs text-gray-500 w-10 text-right">{{ $rate }}%</span>
                                 </div>
                             </td>
-                            <td class="px-5 py-3 text-right">
+                            <td class="px-4 py-3 text-right">
                                 <a href="{{ route('admin.logs', ['platform' => $p->platform, 'status' => 'failed']) }}"
                                     class="text-xs text-violet-600 dark:text-violet-400 hover:underline whitespace-nowrap">Debug
                                     →</a>
