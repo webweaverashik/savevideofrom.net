@@ -21,7 +21,8 @@ def base_opts(ffmpeg_path: str | None = None, cookies_file: str | None = None) -
         "nocheckcertificate": True,
         "noplaylist": True,
         "retries": 3,
-        "extractor_retries": 2,
+        "extractor_retries": 1,
+        "skip_download": True,
         "socket_timeout": 30,
         "geo_bypass": True,
         "http_headers": {
@@ -110,10 +111,46 @@ def normalize_info(info: dict, platform: str | None = None) -> dict:
 
     formats = _video_options(raw_formats)
     audio = _audio_option(raw_formats)
+
+    # Fallback: site returned video formats with no height (e.g. LinkedIn, some HLS).
+    # Treat any non-audio-only format as a selectable video, labeled by bitrate.
+    if not formats:
+        seen = set()
+        muxed = []
+        for f in raw_formats:
+            vcodec = f.get("vcodec")
+            # skip audio-only (has acodec but no video)
+            is_audio_only = vcodec in (None, "none") and f.get("acodec") not in (None, "none")
+            if is_audio_only:
+                continue
+            ext = f.get("ext") or "mp4"
+            tbr = f.get("tbr") or f.get("vbr") or 0
+            key = (ext, round(tbr or 0))
+            if key in seen:
+                continue
+            seen.add(key)
+            label = f"{int(tbr)}k" if tbr else (f.get("format_note") or "Video")
+            muxed.append({
+                "format_id": str(f.get("format_id")),
+                "ext": ext,
+                "type": "video",
+                "quality": label,
+                "resolution": None,
+                "filesize": f.get("filesize") or f.get("filesize_approx"),
+                "fps": int(f["fps"]) if f.get("fps") else None,
+                "vcodec": vcodec,
+                "acodec": f.get("acodec"),
+                "has_video": True,
+                "has_audio": f.get("acodec") not in (None, "none"),
+            })
+        # Highest bitrate first
+        muxed.sort(key=lambda x: x["filesize"] or 0, reverse=True)
+        formats = muxed
+
     if audio:
         formats.append(audio)
 
-    # Fallback: a direct/single-format result (no format list).
+    # Last resort: single direct URL with no format list.
     if not formats and entry.get("url"):
         formats.append({
             "format_id": str(entry.get("format_id") or "0"),
