@@ -110,7 +110,7 @@ function renderFormats(uuid, data) {
     els.formats.innerHTML = '';
     videos.forEach((f) => els.formats.appendChild(
         formatButton(`${f.quality}`, fmtBytes(f.filesize), (btn) =>
-            requestDownload(uuid, { media_type: 'video', quality: f.quality, format: 'mp4' }, btn))
+            requestDownload(uuid, { media_type: 'video', quality: f.quality, format_id: f.format_id, format: 'mp4' }, btn))
     ));
     if (audio) {
         ['mp3', 'm4a', 'wav'].forEach((codec) => els.formats.appendChild(
