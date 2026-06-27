@@ -23,7 +23,7 @@ class YtDlpDownloader implements MediaDownloader
     public function download(DownloadJob $job): void
     {
         try {
-            $this->guard->assertSafe($url);
+            $this->guard->assertSafe($job->url);
         } catch (BlockedContentException $e) {
             throw new ExtractionException($e->getMessage(), 'blocked', false);
         } catch (UnsafeUrlException $e) {

@@ -66,6 +66,7 @@ class BatchController extends Controller
             'requested_format'  => $request->validated('format'),
             'media_type'        => $mediaType,
             'ip_hash'           => hash('sha256', (string) $request->ip()),
+            'ip_address'        => $request->ip(),
         ]);
 
         $jobs = [];

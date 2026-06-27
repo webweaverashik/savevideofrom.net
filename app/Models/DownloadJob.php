@@ -20,7 +20,7 @@ class DownloadJob extends Model
         'requested_format', 'requested_quality', 'format_id',
         'file_name', 'file_path', 'file_size', 'mime_type',
         'error_type', 'error_message',
-        'ip_hash', 'user_agent', 'meta',
+        'ip_hash', 'ip_address', 'user_agent', 'meta',
         'started_at', 'completed_at', 'expires_at',
     ];
 
@@ -92,5 +92,27 @@ class DownloadJob extends Model
     public function batch(): BelongsTo
     {
         return $this->belongsTo(DownloadBatch::class, 'batch_id');
+    }
+
+    public function deviceType(): string
+    {
+        $ua = strtolower((string) $this->user_agent);
+        if ($ua === '') {
+            return 'unknown';
+        }
+
+        if (preg_match('/mobile|iphone|android.*mobile|windows phone/', $ua)) {
+            return 'Mobile';
+        }
+
+        if (preg_match('/ipad|tablet|android(?!.*mobile)/', $ua)) {
+            return 'Tablet';
+        }
+
+        if (preg_match('/bot|crawl|spider/', $ua)) {
+            return 'Bot';
+        }
+
+        return 'Desktop';
     }
 }

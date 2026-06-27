@@ -34,6 +34,7 @@ class DownloadController extends Controller
             'url'        => $url,
             'platform'   => $this->detector->detect($url),
             'ip_hash'    => hash('sha256', (string) $request->ip()),
+            'ip_address' => $request->ip(),
             'user_agent' => Str::limit((string) $request->userAgent(), 250, ''),
         ]);
 

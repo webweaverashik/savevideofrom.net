@@ -39,6 +39,7 @@
                     <tr>
                         <th class="px-4 py-3">When</th>
                         <th class="px-4 py-3">Platform</th>
+                        <th class="px-4 py-3">IP / Device</th>
                         <th class="px-4 py-3">Type</th>
                         <th class="px-4 py-3">Quality</th>
                         <th class="px-4 py-3">Status</th>
@@ -59,6 +60,10 @@
                             <td class="px-4 py-3 whitespace-nowrap text-gray-500">{{ $job->created_at->diffForHumans() }}
                             </td>
                             <td class="px-4 py-3 capitalize">{{ $job->platform ?? '—' }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <span class="font-mono text-xs">{{ $job->ip_address ?? '—' }}</span>
+                                <span class="block text-xs text-gray-400">{{ $job->deviceType() }}</span>
+                            </td>
                             <td class="px-4 py-3">{{ $job->media_type?->value ?? '—' }}</td>
                             <td class="px-4 py-3">{{ $job->requested_quality ?? '—' }}</td>
                             <td class="px-4 py-3">

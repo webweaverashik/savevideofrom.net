@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace App\Rules;
 
@@ -18,7 +18,14 @@ class NetscapeCookieFile implements ValidationRule
             return;
         }
 
-        $contents = (string) file_get_contents($value->getRealPath());
+        $path = $value->getRealPath() ?: $value->getPathname();
+
+        if (! $path || ! is_readable($path)) {
+            $fail('The cookie file could not be read.');
+            return;
+        }
+
+        $contents = (string) file_get_contents($path);
 
         if (! CookieManager::looksLikeNetscape($contents)) {
             $fail('One of the files is not a valid Netscape cookies.txt file.');
