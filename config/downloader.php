@@ -80,6 +80,6 @@ return [
         'xhamster.com', 'spankbang.com', 'youjizz.com', 'tube8.com', 'tnaflix.com',
         'porntrex.com', 'eporner.com', 'hclips.com', 'txxx.com', 'beeg.com',
         'chaturbate.com', 'stripchat.com', 'cam4.com', 'bongacams.com', 'myfreecams.com',
-        'onlyfans.com', 'fansly.com', 'brazzers.com', 'naughtyamerica.com', 'rule34video.com',
+        'onlyfans.com', 'fansly.com', 'brazzers.com', 'naughtyamerica.com', 'rule34video.com', 'faphouse.com',
     ],
 ];
