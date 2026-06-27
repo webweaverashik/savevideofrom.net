@@ -29,6 +29,8 @@ def base_opts(ffmpeg_path: str | None = None, cookies_file: str | None = None) -
             "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
                            "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"),
         },
+        "extractor_args": {"youtube": {"player_client": ["android"]}},
+        # "proxy": "http://user:pass@proxy-host:port",
     }
     if ffmpeg_path:
         opts["ffmpeg_location"] = ffmpeg_path
