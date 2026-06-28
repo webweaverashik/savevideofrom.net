@@ -37,23 +37,23 @@ def build_format_opts(opts: dict, data: dict) -> None:
         }]
         return
 
-    # If we have an explicit format_id, prefer it (merge audio if separate, else take as-is).
+# If we have an explicit format_id, prefer it (merge audio if separate, else take as-is).
     if fmt_id and fmt_id not in ("auto", "best"):
         opts["format"] = f"{fmt_id}+bestaudio/{fmt_id}/best"
     else:
-        # Only use a height filter when quality is a real pixel height like "720p".
         digits = re.sub(r"\D", "", quality)
-        m = re.match(r"^\d+p$", quality)   # "720p", "1080p" — true heights
-        if m and digits:
+        if re.match(r"^\d+p$", quality) and digits:
             h = digits
             opts["format"] = (
-                f"bestvideo[height<={h}]+bestaudio/"
-                f"best[height<={h}]/"
-                f"bestvideo+bestaudio/best"
+                f"bestvideo[height<={h}]+bestaudio/"   # separate streams, merge
+                f"best[height<={h}]/"                  # muxed at/under height
+                f"bestvideo[height<={h}]/"             # video-only at/under height (no audio exists)
+                f"bestvideo+bestaudio/"                # any separate streams
+                f"best/"                               # any muxed
+                f"bestvideo"                           # any video-only (last resort)
             )
         else:
-            # Fallback formats (bitrate/width labels like "1920p", "519k") — no height filter.
-            opts["format"] = "bestvideo+bestaudio/best/best"
+            opts["format"] = "bestvideo+bestaudio/best/bestvideo/best"
 
     opts["merge_output_format"] = requested if requested in VIDEO_CONTAINERS else "mp4"
 
